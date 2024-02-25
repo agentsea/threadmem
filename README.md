@@ -1,13 +1,27 @@
-# Agent Threads
+# deepthread
 
 Rich threads for AI agents
 
-Agent Threads provides a rich chat abstraction for AI agents with a Python abstraction on the backend and a React abstraction on the frontend. We support [Agentscript](https://github.com/agentsea/agentscript) for beautiful UI expereinces.
+Deepthread provides a chat abstraction for AI agents with a Python abstraction on the backend and a React abstraction on the frontend. We support [Agentscript](https://github.com/agentsea/agentscript) for beautiful UI experiences.
 
-Threads are convertible to common chat instruction schemas such as chatml.
+## Backend
 
-## Installation
+### Installation
 
 ```
-pip install agent-threads
+pip install deepthread
+```
+
+### Usage
+
+```python
+from deepthread import Thread
+
+
+```
+
+### Frontend
+
+```
+npm i @agentsea/deepthread
 ```

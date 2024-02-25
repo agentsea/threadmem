@@ -24,7 +24,7 @@ class ThreadRecord(Base):
     __tablename__ = "threads"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    owner_id = Column(String, nullable=False)
+    owner_id = Column(String, nullable=True)
     public = Column(Boolean, default=False)
     name = Column(String, nullable=True)
     participants = Column(String, nullable=True)

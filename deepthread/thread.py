@@ -4,8 +4,8 @@ import uuid
 import time
 import json
 
-from agent_threads.db.models import MessageRecord, ThreadRecord
-from agent_threads.db.conn import WithDB
+from deepthread.db.models import MessageRecord, ThreadRecord
+from deepthread.db.conn import WithDB
 
 
 @dataclass
@@ -65,7 +65,7 @@ class Thread(WithDB):
 
     def __init__(
         self,
-        owner_id: str,
+        owner_id: Optional[str] = None,
         public: bool = False,
         participants: List[str] = [],
         name: Optional[str] = None,
@@ -78,6 +78,8 @@ class Thread(WithDB):
         self._id = str(uuid.uuid4())
         self._name = name
         self._metadata = metadata
+
+        self.save()
 
     def post(self, user_id: str, msg: str, private: bool = False) -> None:
         self._messages.append(Message(user_id, msg, private))
