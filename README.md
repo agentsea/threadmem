@@ -30,3 +30,17 @@ print(thread.messages())
 ```
 npm i @agentsea/deepthread
 ```
+
+## Develop
+
+To test
+
+```sh
+make test
+```
+
+To publish
+
+```sh
+make publish
+```
