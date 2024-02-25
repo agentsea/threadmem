@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agent-threads"
-version = "0.1.0"
+version = "0.1.1"
 description = "Rich threads for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
 license = "Apache 2.0"
@@ -9,6 +9,7 @@ packages = [{include = "agent_threads"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+sqlalchemy = "^2.0.27"
 
 
 [build-system]
