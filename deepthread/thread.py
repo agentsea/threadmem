@@ -83,6 +83,7 @@ class Thread(WithDB):
 
     def post(self, user_id: str, msg: str, private: bool = False) -> None:
         self._messages.append(Message(user_id, msg, private))
+        self.save()
 
     def messages(self, include_private: bool = True) -> List[Message]:
         if include_private:

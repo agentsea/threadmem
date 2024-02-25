@@ -17,10 +17,15 @@ pip install deepthread
 ```python
 from deepthread import Thread
 
+thread = Thread()
+thread.post("user123", "Hello, Thread!")
 
+print(thread.messages())
 ```
 
-### Frontend
+## Frontend
+
+### Installation
 
 ```
 npm i @agentsea/deepthread
