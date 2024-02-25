@@ -1,13 +1,11 @@
 from dataclasses import dataclass
-from typing import List, Optional, Type, TypeVar
+from typing import List, Optional
 import uuid
 import time
 import json
 
 from agent_threads.db.models import MessageRecord, ThreadRecord
 from agent_threads.db.conn import WithDB
-
-T = TypeVar("T", bound="WithDB")
 
 
 @dataclass
@@ -26,7 +24,7 @@ class Message(WithDB):
         self.save()
 
     def to_record(self) -> MessageRecord:
-        metadata = json.dumps(self._metadata) if self._metadata else None
+        metadata = json.dumps(self.metadata) if self.metadata else None
         return MessageRecord(
             id=self.id,
             user_id=self.user_id,
@@ -34,12 +32,12 @@ class Message(WithDB):
             private=self.private,
             created=self.created,
             role=self.role,
-            metadata=metadata,
+            meta_data=metadata,
         )
 
     @classmethod
     def from_record(cls, record: MessageRecord) -> "Message":
-        metadata_dict = json.loads(record.metadata) if record.metadata else None
+        metadata_dict = json.loads(record.meta_data) if record.meta_data else None
         obj = cls.__new__(cls)
         obj.id = record.id
         obj.user_id = record.user_id
@@ -52,11 +50,11 @@ class Message(WithDB):
 
     def save(self) -> None:
         for db in self.get_db():
-            db.add(self.to_record())
+            db.merge(self.to_record())
             db.commit()
 
     @classmethod
-    def find(cls, **kwargs) -> List[T]:
+    def find(cls, **kwargs) -> List["Message"]:
         for db in cls.get_db():
             records = db.query(MessageRecord).filter_by(**kwargs).all()
             return [cls.from_record(record) for record in records]
@@ -96,9 +94,7 @@ class Thread(WithDB):
         return out
 
     def to_record(self) -> ThreadRecord:
-        participants = None
-        if self._participants:
-            participants = json.dumps(self._participants)
+        participants = json.dumps(self._participants) if self._participants else None
         metadata = json.dumps(self._metadata) if self._metadata else None
         return ThreadRecord(
             id=self._id,
@@ -107,14 +103,14 @@ class Thread(WithDB):
             messages=[message.to_record() for message in self._messages],
             participants=participants,
             name=self._name,
-            metadata=metadata,
+            meta_data=metadata,
         )
 
     @classmethod
     def from_record(cls, record: ThreadRecord) -> "Thread":
         participants = json.loads(record.participants) if record.participants else []
-        metadata_dict = json.loads(record.metadata) if record.metadata else None
-        obj = cls.__new__(cls)  # Create an instance without calling __init__
+        metadata_dict = json.loads(record.meta_data) if record.meta_data else None
+        obj = cls.__new__(cls)
         obj._id = record.id
         obj._owner_id = record.owner_id
         obj._public = record.public
@@ -130,7 +126,7 @@ class Thread(WithDB):
             db.commit()
 
     @classmethod
-    def find(cls, **kwargs) -> List[T]:
+    def find(cls, **kwargs) -> List["Thread"]:
         for db in cls.get_db():
             records = db.query(ThreadRecord).filter_by(**kwargs).all()
             return [cls.from_record(record) for record in records]
