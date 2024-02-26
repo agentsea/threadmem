@@ -1,1 +1,1 @@
-from .thread import Thread, Message
+from .gpt import GPTMessage, GPTThread

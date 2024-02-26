@@ -36,11 +36,15 @@ pip install deepthread
 
 ### Usage
 
-```python
-from deepthread import Thread
+#### GPT Threads
 
-thread = Thread()
-thread.post("user123", "Hello, Thread!")
+Create a OpenAI GPT style thread
+
+```python
+from deepthread import GPTThread
+
+thread = GPTThread()
+thread.post("user", "Hello, Thread!")
 
 print(thread.messages())
 ```
