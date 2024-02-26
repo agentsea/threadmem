@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uuid
 import time
 import json
 
-from deepthread.db.models import GPTMessageRecord, GPTThreadRecord
+from deepthread.db.models import RoleMessageRecord, RoleThreadRecord
 from deepthread.db.conn import WithDB
 
 
 @dataclass
-class GPTMessage(WithDB):
-    """An OpenAI GPT style chat message"""
+class RoleMessage(WithDB):
+    """An role based style chat message"""
 
     role: str
     text: str
@@ -23,10 +23,10 @@ class GPTMessage(WithDB):
     def __post_init__(self) -> None:
         self.save()
 
-    def to_record(self) -> GPTMessageRecord:
+    def to_record(self) -> RoleMessageRecord:
         metadata = json.dumps(self.metadata) if self.metadata else None
         images = json.dumps(self.images) if self.images else None
-        return GPTMessageRecord(
+        return RoleMessageRecord(
             id=self.id,
             text=self.text,
             images=images,
@@ -37,7 +37,7 @@ class GPTMessage(WithDB):
         )
 
     @classmethod
-    def from_record(cls, record: GPTMessageRecord) -> "GPTMessage":
+    def from_record(cls, record: RoleMessageRecord) -> "RoleMessage":
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
         images_list = json.loads(record.images) if record.images else None
         obj = cls.__new__(cls)
@@ -56,14 +56,14 @@ class GPTMessage(WithDB):
             db.commit()
 
     @classmethod
-    def find(cls, **kwargs) -> List["GPTMessage"]:
+    def find(cls, **kwargs) -> List["RoleMessage"]:
         for db in cls.get_db():
-            records = db.query(GPTMessageRecord).filter_by(**kwargs).all()
+            records = db.query(RoleMessageRecord).filter_by(**kwargs).all()
             return [cls.from_record(record) for record in records]
 
 
-class GPTThread(WithDB):
-    """An OpenAI GPT style chat thread"""
+class RoleThread(WithDB):
+    """A role based chat thread"""
 
     def __init__(
         self,
@@ -72,7 +72,7 @@ class GPTThread(WithDB):
         name: Optional[str] = None,
         metadata: Optional[dict] = None,
     ) -> None:
-        self._messages: List[GPTMessage] = []
+        self._messages: List[RoleMessage] = []
         self._owner_id = owner_id
         self._public = public
         self._id = str(uuid.uuid4())
@@ -90,7 +90,7 @@ class GPTThread(WithDB):
         metadata: Optional[dict] = None,
     ) -> None:
         self._messages.append(
-            GPTMessage(
+            RoleMessage(
                 role,
                 msg,
                 images=images,
@@ -100,7 +100,7 @@ class GPTThread(WithDB):
         )
         self.save()
 
-    def messages(self, include_private: bool = True) -> List[GPTMessage]:
+    def messages(self, include_private: bool = True) -> List[RoleMessage]:
         if include_private:
             return self._messages
 
@@ -111,9 +111,9 @@ class GPTThread(WithDB):
 
         return out
 
-    def to_record(self) -> GPTThreadRecord:
+    def to_record(self) -> RoleThreadRecord:
         metadata = json.dumps(self._metadata) if self._metadata else None
-        return GPTThreadRecord(
+        return RoleThreadRecord(
             id=self._id,
             owner_id=self._owner_id,
             public=self._public,
@@ -123,7 +123,7 @@ class GPTThread(WithDB):
         )
 
     @classmethod
-    def from_record(cls, record: GPTThreadRecord) -> "GPTThread":
+    def from_record(cls, record: RoleThreadRecord) -> "RoleThread":
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
         obj = cls.__new__(cls)
         obj._id = record.id
@@ -131,7 +131,7 @@ class GPTThread(WithDB):
         obj._public = record.public
         obj._name = record.name
         obj._metadata = metadata_dict
-        obj._messages = [GPTMessage.from_record(msg) for msg in record.messages]
+        obj._messages = [RoleMessage.from_record(msg) for msg in record.messages]
         return obj
 
     def save(self) -> None:
@@ -140,9 +140,9 @@ class GPTThread(WithDB):
             db.commit()
 
     @classmethod
-    def find(cls, **kwargs) -> List["GPTThread"]:
+    def find(cls, **kwargs) -> List["RoleThread"]:
         for db in cls.get_db():
-            records = db.query(GPTThreadRecord).filter_by(**kwargs).all()
+            records = db.query(RoleThreadRecord).filter_by(**kwargs).all()
             return [cls.from_record(record) for record in records]
 
     @property
@@ -174,3 +174,14 @@ class GPTThread(WithDB):
     def metadata(self, value: dict) -> None:
         """Set the metadata of the thread."""
         self._metadata = value
+
+    def to_oai(self, include_private: bool = False) -> Dict[str, List[Dict[str, str]]]:
+        """Convert a RoleThread instance into a format compatible with OpenAI chat completions."""
+        formatted_messages = []
+
+        # TODO: support images
+        for message in self.messages(include_private=include_private):
+            formatted_message = {"role": message.role, "content": message.text}
+            formatted_messages.append(formatted_message)
+
+        return {"messages": formatted_messages}

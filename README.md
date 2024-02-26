@@ -36,17 +36,18 @@ pip install deepthread
 
 ### Usage
 
-#### GPT Threads
+#### Role Threads
 
-Create a OpenAI GPT style thread
+Create a role based thread
 
 ```python
-from deepthread import GPTThread
+from deepthread import Thread
 
-thread = GPTThread()
+thread = Thread()
 thread.post("user", "Hello, Thread!")
 
-print(thread.messages())
+# output in openai chat schema format
+print(thread.to_oai())
 ```
 
 ## Frontend

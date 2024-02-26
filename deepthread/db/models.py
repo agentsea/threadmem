@@ -7,8 +7,8 @@ from sqlalchemy.orm import relationship, declarative_base
 Base = declarative_base()
 
 
-class GPTMessageRecord(Base):
-    __tablename__ = "gpt_messages"
+class RoleMessageRecord(Base):
+    __tablename__ = "role_messages"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     role = Column(String, nullable=False)
@@ -17,11 +17,11 @@ class GPTMessageRecord(Base):
     private = Column(Boolean, nullable=False)
     created = Column(Float, default=time.time)
     meta_data = Column(String, nullable=True)
-    thread_id = Column(String, ForeignKey("gpt_threads.id"))
+    thread_id = Column(String, ForeignKey("role_threads.id"))
 
 
-class GPTThreadRecord(Base):
-    __tablename__ = "gpt_threads"
+class RoleThreadRecord(Base):
+    __tablename__ = "role_threads"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     owner_id = Column(String, nullable=True)
@@ -29,4 +29,4 @@ class GPTThreadRecord(Base):
     name = Column(String, nullable=True)
     meta_data = Column(String, nullable=True)
 
-    messages = relationship("GPTMessageRecord", backref="gpt_thread")
+    messages = relationship("RoleMessageRecord", backref="role_thread")
