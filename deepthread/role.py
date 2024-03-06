@@ -3,9 +3,11 @@ from typing import List, Optional, Dict
 import uuid
 import time
 import json
+from datetime import datetime
 
 from deepthread.db.models import RoleMessageRecord, RoleThreadRecord
 from deepthread.db.conn import WithDB
+from .models import RoleMessageModel, RoleThreadModel
 
 
 @dataclass
@@ -60,6 +62,29 @@ class RoleMessage(WithDB):
         for db in cls.get_db():
             records = db.query(RoleMessageRecord).filter_by(**kwargs).all()
             return [cls.from_record(record) for record in records]
+
+    @classmethod
+    def from_schema(cls, schema: RoleMessageModel) -> "RoleMessage":
+        obj = cls.__new__(cls)
+        obj.id = str(schema.id)
+        obj.text = schema.text
+        obj.images = schema.images
+        obj.private = schema.private
+        obj.created = schema.created.timestamp()
+        obj.role = schema.role
+        obj.metadata = schema.metadata
+        return obj
+
+    def to_schema(self) -> RoleMessageModel:
+        return RoleMessageModel(
+            id=self.id,
+            role=self.role,
+            text=self.text,
+            images=self.images,
+            private=self.private,
+            created=datetime.fromtimestamp(self.created),
+            metadata=self.metadata,
+        )
 
 
 class RoleThread(WithDB):
@@ -185,3 +210,26 @@ class RoleThread(WithDB):
             formatted_messages.append(formatted_message)
 
         return {"messages": formatted_messages}
+
+    @classmethod
+    def from_schema(cls, schema: RoleThreadModel) -> "RoleThread":
+        obj = cls.__new__(cls)
+        obj._id = str(schema.id)
+        obj._owner_id = schema.owner_id
+        obj._public = schema.public
+        obj._name = schema.name
+        obj._metadata = schema.metadata
+        obj._messages = [
+            RoleMessage.from_schema(msg_schema) for msg_schema in schema.messages
+        ]
+        return obj
+
+    def to_schema(self) -> RoleThreadModel:
+        return RoleThreadModel(
+            id=self._id,
+            owner_id=self._owner_id,
+            public=self._public,
+            name=self._name,
+            metadata=self._metadata,
+            messages=[message.to_schema() for message in self._messages],
+        )
