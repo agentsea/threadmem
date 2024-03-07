@@ -171,6 +171,11 @@ class RoleThread(WithDB):
             return [cls.from_record(record) for record in records]
 
     @property
+    def id(self) -> str:
+        """Get the ID of the thread."""
+        return self._id
+
+    @property
     def owner_id(self) -> str:
         """Get the owner ID of the thread."""
         return self._owner_id
