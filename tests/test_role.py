@@ -152,17 +152,42 @@ def test_thread_metadata_setter():
     assert thread.metadata == new_metadata
 
 
-def test_thread_save_and_find():
+def test_thread_save_and_find_by_owner_id():
     owner_id = generate_random_user()
     thread = RoleThread(
         owner_id=owner_id, public=True, name="Test Thread", metadata={"key": "value"}
     )
     thread.save()
 
-    found_threads = RoleThread.find(owner_id=owner_id)
-    assert len(found_threads) == 1
-    assert found_threads[0].owner_id == owner_id
-    assert found_threads[0].name == "Test Thread"
+    found_threads_by_owner_id = RoleThread.find(owner_id=owner_id)
+    assert len(found_threads_by_owner_id) == 1
+    assert found_threads_by_owner_id[0].owner_id == owner_id
+    assert found_threads_by_owner_id[0].name == "Test Thread"
+
+
+def test_thread_save_and_find_by_public():
+    owner_id = generate_random_user()
+    thread = RoleThread(
+        owner_id=owner_id, public=True, name="Public Thread", metadata={"key": "value"}
+    )
+    thread.save()
+
+    found_threads_by_public = RoleThread.find(public=True)
+    assert len(found_threads_by_public) > 0
+    assert any(thread.public for thread in found_threads_by_public)
+
+
+def test_thread_save_and_find_by_name():
+    owner_id = generate_random_user()
+    thread_name = "Unique Thread Name"
+    thread = RoleThread(
+        owner_id=owner_id, public=True, name=thread_name, metadata={"key": "value"}
+    )
+    thread.save()
+
+    found_threads_by_name = RoleThread.find(name=thread_name)
+    assert len(found_threads_by_name) >= 1
+    assert found_threads_by_name[-1].name == thread_name
 
 
 def test_post_message_to_RoleThread():
@@ -222,3 +247,187 @@ def test_two_users_communication():
             message.role == user2_id and message.text == msg_text
             for message in messages
         ), f"User 2's message '{msg_text}' not found"
+
+
+def test_thread_initialization_with_preexisting_messages():
+    user_id = generate_random_user()
+    preexisting_messages = [
+        RoleMessage(role=user_id, text="Pre-existing message 1"),
+        RoleMessage(role=user_id, text="Pre-existing message 2"),
+        RoleMessage(role=user_id, text="Pre-existing message 3"),
+    ]
+
+    thread = RoleThread(
+        owner_id=user_id, public=True, name="Pre-existing Messages Thread"
+    )
+
+    for message in preexisting_messages:
+        thread.post(role=message.role, msg=message.text, private=message.private)
+
+    thread.save()
+    id = thread.id
+    thread_retrieved = RoleThread.find(id=id)[0]
+
+    assert len(thread_retrieved.messages()) == len(
+        preexisting_messages
+    ), "The number of messages in the thread does not match the number of pre-existing messages"
+
+    for original_msg, retrieved_msg in zip(
+        preexisting_messages, thread_retrieved.messages()
+    ):
+        assert (
+            original_msg.text == retrieved_msg.text
+        ), f"Expected message text '{original_msg.text}' but found '{retrieved_msg.text}'"
+
+
+def test_thread_metadata_setter_and_getter():
+    user_id = generate_random_user()
+    initial_metadata = {"category": "General", "priority": "High"}
+    updated_metadata = {"category": "Specific", "priority": "Low"}
+
+    # Create a thread with initial metadata
+    thread = RoleThread(
+        owner_id=user_id,
+        public=True,
+        name="Metadata Test Thread",
+        metadata=initial_metadata,
+    )
+    thread.save()
+
+    # Retrieve the thread and verify initial metadata
+    retrieved_thread = RoleThread.find(id=thread.id)[0]
+    assert (
+        retrieved_thread.metadata == initial_metadata
+    ), "Initial metadata does not match"
+
+    # Update the thread metadata
+    retrieved_thread.metadata = updated_metadata
+    retrieved_thread.save()
+
+    # Retrieve the thread again and verify updated metadata
+    updated_thread = RoleThread.find(id=thread.id)[0]
+    assert (
+        updated_thread.metadata == updated_metadata
+    ), "Updated metadata does not match"
+
+
+def test_thread_message_privacy_filtering():
+    user_id = generate_random_user()
+    thread = RoleThread(
+        owner_id=user_id, public=True, name="Privacy Filter Test Thread"
+    )
+
+    # Post both public and private messages
+    thread.post(role=user_id, msg="Public Message 1", private=False)
+    thread.post(role=user_id, msg="Private Message 1", private=True)
+    thread.post(role=user_id, msg="Public Message 2", private=False)
+
+    # Retrieve all messages, including private ones
+    all_messages = thread.messages(include_private=True)
+    assert len(all_messages) == 3, "Expected 3 messages, including private ones"
+
+    # Retrieve only public messages
+    public_messages = thread.messages(include_private=False)
+    assert (
+        len(public_messages) == 2
+    ), "Expected 2 public messages, excluding private ones"
+
+    # Verify that the private message is indeed excluded
+    for message in public_messages:
+        assert (
+            not message.private
+        ), "Expected only public messages, but found a private one"
+
+
+def test_thread_serialization_deserialization():
+    owner_id = generate_random_user()
+    thread = RoleThread(
+        owner_id=owner_id, public=True, name="Serialization Test Thread"
+    )
+    messages = [
+        RoleMessage(role=owner_id, text="Message 1", private=False),
+        RoleMessage(role=owner_id, text="Message 2", private=True),
+    ]
+    for message in messages:
+        thread.post(role=message.role, msg=message.text, private=message.private)
+
+    # Serialize the thread
+    serialized_thread = thread.to_record()
+    assert serialized_thread.owner_id == owner_id
+    assert serialized_thread.public is True
+    assert serialized_thread.name == "Serialization Test Thread"
+    assert len(serialized_thread.messages) == 2
+
+    # Deserialize the thread
+    deserialized_thread = RoleThread.from_record(serialized_thread)
+    assert deserialized_thread.owner_id == owner_id
+    assert deserialized_thread.public is True
+    assert deserialized_thread.name == "Serialization Test Thread"
+    assert len(deserialized_thread.messages()) == 2
+
+    # Verify the messages are correctly associated
+    for original, deserialized in zip(messages, deserialized_thread.messages()):
+        assert original.text == deserialized.text
+        assert original.private == deserialized.private
+
+
+def test_thread_update_operations():
+    owner_id = generate_random_user()
+    thread = RoleThread(
+        owner_id=owner_id,
+        public=True,
+        name="Original Thread Name",
+        metadata={"original_key": "original_value"},
+    )
+    thread.save()
+
+    # Update thread properties
+    updated_name = "Updated Thread Name"
+    updated_metadata = {"updated_key": "updated_value"}
+    thread.name = updated_name
+    thread.metadata = updated_metadata
+    thread.save()
+
+    # Retrieve updated thread from database
+    updated_thread = RoleThread.find(id=thread.id)[0]
+
+    # Verify that updates persist correctly
+    assert updated_thread.name == updated_name, "Thread name was not updated correctly"
+    assert (
+        updated_thread.metadata == updated_metadata
+    ), "Thread metadata was not updated correctly"
+
+
+def test_role_thread_to_oai_conversion():
+    owner_id = generate_random_user()
+    thread = RoleThread(owner_id=owner_id, public=True, name="Test Thread for OAI")
+
+    # Add messages to the thread
+    thread.post(role="user", msg="Public message from user", private=False)
+    thread.post(role="system", msg="Private system update", private=True)
+    thread.post(role="user", msg="Another public message", private=False)
+
+    # Convert to OpenAI format including private messages
+    oai_format_with_private = thread.to_oai(include_private=True)
+    expected_with_private = {
+        "messages": [
+            {"role": "user", "content": "Public message from user"},
+            {"role": "system", "content": "Private system update"},
+            {"role": "user", "content": "Another public message"},
+        ]
+    }
+    assert (
+        oai_format_with_private == expected_with_private
+    ), "Conversion including private messages failed"
+
+    # Convert to OpenAI format excluding private messages
+    oai_format_without_private = thread.to_oai(include_private=False)
+    expected_without_private = {
+        "messages": [
+            {"role": "user", "content": "Public message from user"},
+            {"role": "user", "content": "Another public message"},
+        ]
+    }
+    assert (
+        oai_format_without_private == expected_without_private
+    ), "Conversion excluding private messages failed"
