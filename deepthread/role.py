@@ -19,7 +19,7 @@ class RoleMessage(WithDB):
     images: List[str] = field(default_factory=list)
     private: Optional[bool] = False
     created: float = time.time()
-    id: str = str(uuid.uuid4())
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
     metadata: Optional[dict] = None
 
     def __post_init__(self) -> None:
