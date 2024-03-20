@@ -5,24 +5,24 @@
     <img src="https://project-logo.png" alt="Logo" width="80">
   </a> -->
 
-  <h1 align="center">deepthread</h1>
+  <h1 align="center">threadmem</h1>
 
   <p align="center">
     Rich chat threads for AI agents
     <br />
-    <a href="https://github.com/agentsea/deepthread"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/agentsea/threadmem"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/agentsea/deepthread">View Demo</a>
+    <a href="https://github.com/agentsea/threadmem">View Demo</a>
     ·
-    <a href="https://github.com/agentsea/deepthread/issues">Report Bug</a>
+    <a href="https://github.com/agentsea/threadmem/issues">Report Bug</a>
     ·
-    <a href="https://github.com/agentsea/deepthread/issues">Request Feature</a>
+    <a href="https://github.com/agentsea/threadmem/issues">Request Feature</a>
   </p>
   <br>
 </p>
 
-Deepthread enables robust chat experiences with AI agents. It offers a Python backend for managing thread state as well as a React chat interface.
+Threadmem enables robust chat experiences with AI agents. It offers a Python backend for managing thread state as well as a React chat interface.
 
 We support [Agentscript](https://github.com/agentsea/agentscript) for beautiful UI experiences.
 
@@ -31,7 +31,7 @@ We support [Agentscript](https://github.com/agentsea/agentscript) for beautiful 
 ### Installation
 
 ```
-pip install deepthread
+pip install threadmem
 ```
 
 ### Usage
@@ -41,7 +41,7 @@ pip install deepthread
 Create a role based thread
 
 ```python
-from deepthread import Thread
+from threadmem import Thread
 
 thread = Thread()
 thread.post("user", "Hello, Thread!")
@@ -55,7 +55,7 @@ print(thread.to_oai())
 ### Installation
 
 ```
-npm i @agentsea/deepthread
+npm i @agentsea/threadmem
 ```
 
 ## Develop

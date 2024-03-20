@@ -1,6 +1,6 @@
 from random import randint
 
-from deepthread import (
+from threadmem import (
     RoleThread,
     RoleMessage,
 )

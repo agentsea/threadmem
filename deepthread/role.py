@@ -4,8 +4,8 @@ import uuid
 import time
 import json
 
-from deepthread.db.models import RoleMessageRecord, RoleThreadRecord
-from deepthread.db.conn import WithDB
+from threadmem.db.models import RoleMessageRecord, RoleThreadRecord
+from threadmem.db.conn import WithDB
 from .models import RoleMessageModel, RoleThreadModel
 
 
