@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
 
 
 class RoleMessageModel(BaseModel):
@@ -8,7 +7,7 @@ class RoleMessageModel(BaseModel):
     text: str
     images: List[str] = []
     private: Optional[bool] = None
-    created: datetime
+    created: float
     id: str
     metadata: Optional[dict] = None
 

@@ -3,7 +3,6 @@ from typing import List, Optional, Dict
 import uuid
 import time
 import json
-from datetime import datetime
 
 from deepthread.db.models import RoleMessageRecord, RoleThreadRecord
 from deepthread.db.conn import WithDB
@@ -70,7 +69,7 @@ class RoleMessage(WithDB):
         obj.text = schema.text
         obj.images = schema.images
         obj.private = schema.private
-        obj.created = schema.created.timestamp()
+        obj.created = schema.created
         obj.role = schema.role
         obj.metadata = schema.metadata
         return obj
@@ -82,7 +81,7 @@ class RoleMessage(WithDB):
             text=self.text,
             images=self.images,
             private=self.private,
-            created=datetime.fromtimestamp(self.created),
+            created=self.created,
             metadata=self.metadata,
         )
 
