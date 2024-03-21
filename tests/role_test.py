@@ -76,3 +76,9 @@ def test_post_message_to_RoleThread():
     assert thread.messages()[0].role == role
     assert thread.messages()[0].text == message_text
     assert thread.messages()[0].private is False
+
+    thread_new = RoleThread.find(owner_id=owner_id, name="Test Thread")[0]
+    assert len(thread_new.messages()) == 1
+    assert thread_new.messages()[0].role == role
+    assert thread_new.messages()[0].text == message_text
+    assert thread_new.messages()[0].private is False

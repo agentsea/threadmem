@@ -3,13 +3,13 @@ from typing import List, Optional
 
 
 class RoleMessageModel(BaseModel):
+    id: str
     role: str
     text: str
     images: List[str] = []
     private: Optional[bool] = None
-    created: float
-    id: str
     metadata: Optional[dict] = None
+    created: float
 
 
 class RoleThreadModel(BaseModel):

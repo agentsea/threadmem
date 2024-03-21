@@ -40,7 +40,7 @@ class RoleMessage(WithDB):
     @classmethod
     def from_record(cls, record: RoleMessageRecord) -> "RoleMessage":
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
-        images_list = json.loads(record.images) if record.images else None
+        images_list = json.loads(record.images) if record.images else []
         obj = cls.__new__(cls)
         obj.id = record.id
         obj.text = record.text
