@@ -15,10 +15,11 @@ class RoleMessage(WithDB):
 
     role: str
     text: str
+    thread_id: str
     images: List[str] = field(default_factory=list)
     private: Optional[bool] = False
     created: float = time.time()
-    id: str = str(uuid.uuid4())
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
     metadata: Optional[dict] = None
 
     def __post_init__(self) -> None:
@@ -35,6 +36,7 @@ class RoleMessage(WithDB):
             created=self.created,
             role=self.role,
             meta_data=metadata,
+            thread_id=self.thread_id,
         )
 
     @classmethod
@@ -49,11 +51,13 @@ class RoleMessage(WithDB):
         obj.role = record.role
         obj.metadata = metadata_dict
         obj.images = images_list
+        obj.thread_id = record.thread_id
         return obj
 
     def save(self) -> None:
         for db in self.get_db():
-            db.merge(self.to_record())
+            record = self.to_record()
+            db.merge(record)
             db.commit()
 
     @classmethod
@@ -72,6 +76,7 @@ class RoleMessage(WithDB):
         obj.created = schema.created
         obj.role = schema.role
         obj.metadata = schema.metadata
+        obj.thread_id = schema.thread_id
         return obj
 
     def to_schema(self) -> RoleMessageModel:
@@ -105,6 +110,10 @@ class RoleThread(WithDB):
 
         self.save()
 
+    @property
+    def id(self) -> str:
+        return self._id
+
     def post(
         self,
         role: str,
@@ -117,6 +126,7 @@ class RoleThread(WithDB):
             RoleMessage(
                 role,
                 msg,
+                thread_id=self._id,
                 images=images,
                 private=private,
                 metadata=metadata,

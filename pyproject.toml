@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "threadmem"
-version = "0.1.7"
-description = "Rich threads for AI agents"
+version = "0.1.8"
+description = "Thread memory for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
 license = "Apache 2.0"
 readme = "README.md"

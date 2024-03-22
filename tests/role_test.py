@@ -56,7 +56,11 @@ def test_thread_save_and_find():
 def test_message_save_and_find():
     role = generate_random_user()
     message = RoleMessage(
-        role=role, text="Hello, World!", private=False, metadata={"key": "value"}
+        role=role,
+        text="Hello, World!",
+        private=False,
+        metadata={"key": "value"},
+        thread_id="1234",
     )
     message.save()
 
@@ -72,13 +76,26 @@ def test_post_message_to_RoleThread():
     message_text = "Hello, Thread!"
     thread.post(role=role, msg=message_text, private=False)
 
-    assert len(thread.messages()) == 1
+    role2 = "assistant"
+    message_text2 = "Hello, Thread 2!"
+    thread.post(role=role2, msg=message_text2, private=True)
+
+    assert len(thread.messages()) == 2
     assert thread.messages()[0].role == role
     assert thread.messages()[0].text == message_text
     assert thread.messages()[0].private is False
 
+    assert thread.messages()[1].role == role2
+    assert thread.messages()[1].text == message_text2
+    assert thread.messages()[1].private is True
+
     thread_new = RoleThread.find(owner_id=owner_id, name="Test Thread")[0]
-    assert len(thread_new.messages()) == 1
+    print("found new thread: ", thread_new.__dict__)
+    assert len(thread_new.messages()) == 2
     assert thread_new.messages()[0].role == role
     assert thread_new.messages()[0].text == message_text
     assert thread_new.messages()[0].private is False
+
+    assert thread_new.messages()[1].role == role2
+    assert thread_new.messages()[1].text == message_text2
+    assert thread_new.messages()[1].private is True

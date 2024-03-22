@@ -10,6 +10,7 @@ class RoleMessageModel(BaseModel):
     private: Optional[bool] = None
     metadata: Optional[dict] = None
     created: float
+    thread_id: str
 
 
 class RoleThreadModel(BaseModel):
