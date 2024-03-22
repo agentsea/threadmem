@@ -88,6 +88,7 @@ class RoleMessage(WithDB):
             private=self.private,
             created=self.created,
             metadata=self.metadata,
+            thread_id=self.thread_id,
         )
 
 
