@@ -8,7 +8,7 @@
   <h1 align="center">threadmem</h1>
 
   <p align="center">
-    Rich chat threads for AI agents
+    Chat thread memory for AI agents
     <br />
     <a href="https://github.com/agentsea/threadmem"><strong>Explore the docs »</strong></a>
     <br />

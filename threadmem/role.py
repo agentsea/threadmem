@@ -4,6 +4,8 @@ import uuid
 import time
 import json
 
+from sqlalchemy import asc
+
 from threadmem.db.models import RoleMessageRecord, RoleThreadRecord
 from threadmem.db.conn import WithDB
 from .models import RoleMessageModel, RoleThreadModel
@@ -63,7 +65,12 @@ class RoleMessage(WithDB):
     @classmethod
     def find(cls, **kwargs) -> List["RoleMessage"]:
         for db in cls.get_db():
-            records = db.query(RoleMessageRecord).filter_by(**kwargs).all()
+            records = (
+                db.query(RoleMessageRecord)
+                .filter_by(**kwargs)
+                .order_by(asc(RoleMessageRecord.created))
+                .all()
+            )
             return [cls.from_record(record) for record in records]
 
     @classmethod
@@ -183,7 +190,12 @@ class RoleThread(WithDB):
     @classmethod
     def find(cls, **kwargs) -> List["RoleThread"]:
         for db in cls.get_db():
-            records = db.query(RoleThreadRecord).filter_by(**kwargs).all()
+            records = (
+                db.query(RoleThreadRecord)
+                .filter_by(**kwargs)
+                .order_by(asc(RoleThreadRecord.created))
+                .all()
+            )
             return [cls.from_record(record) for record in records]
 
     @property

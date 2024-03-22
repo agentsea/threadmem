@@ -31,4 +31,8 @@ class RoleThreadRecord(Base):
     created = Column(Float, default=time.time)
     updated = Column(Float, default=time.time)
 
-    messages = relationship("RoleMessageRecord", backref="role_thread")
+    messages = relationship(
+        "RoleMessageRecord",
+        backref="role_thread",
+        order_by="asc(RoleMessageRecord.created)",
+    )
