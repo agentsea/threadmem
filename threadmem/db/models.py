@@ -28,5 +28,7 @@ class RoleThreadRecord(Base):
     public = Column(Boolean, default=False)
     name = Column(String, nullable=True)
     meta_data = Column(String, nullable=True)
+    created = Column(Float, default=time.time)
+    updated = Column(Float, default=time.time)
 
     messages = relationship("RoleMessageRecord", backref="role_thread")

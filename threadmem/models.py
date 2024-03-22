@@ -20,3 +20,5 @@ class RoleThreadModel(BaseModel):
     metadata: Optional[dict] = None
     id: str
     messages: List[RoleMessageModel]
+    created: float
+    updated: float

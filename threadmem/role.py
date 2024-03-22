@@ -18,7 +18,7 @@ class RoleMessage(WithDB):
     thread_id: str
     images: List[str] = field(default_factory=list)
     private: Optional[bool] = False
-    created: float = time.time()
+    created: float = field(default_factory=time.time())
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     metadata: Optional[dict] = None
 
@@ -108,6 +108,8 @@ class RoleThread(WithDB):
         self._id = str(uuid.uuid4())
         self._name = name
         self._metadata = metadata
+        self._created = time.time()
+        self._updated = time.time()
 
         self.save()
 
@@ -155,6 +157,8 @@ class RoleThread(WithDB):
             messages=[message.to_record() for message in self._messages],
             name=self._name,
             meta_data=metadata,
+            created=self._created,
+            updated=self._updated,
         )
 
     @classmethod
@@ -166,6 +170,8 @@ class RoleThread(WithDB):
         obj._public = record.public
         obj._name = record.name
         obj._metadata = metadata_dict
+        obj._created = record.created
+        obj._updated = record.updated
         obj._messages = [RoleMessage.from_record(msg) for msg in record.messages]
         return obj
 
@@ -232,6 +238,8 @@ class RoleThread(WithDB):
         obj._messages = [
             RoleMessage.from_schema(msg_schema) for msg_schema in schema.messages
         ]
+        obj._created = schema.created
+        obj._updated = schema.updated
         return obj
 
     def to_schema(self) -> RoleThreadModel:
@@ -242,4 +250,6 @@ class RoleThread(WithDB):
             name=self._name,
             metadata=self._metadata,
             messages=[message.to_schema() for message in self._messages],
+            created=self._created,
+            updated=self._updated,
         )
