@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: threadmem-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: threadmem-api
+  template:
+    metadata:
+      labels:
+        app: threadmem-api
+    spec:
+      serviceAccountName: threadmem-sa
+      containers:
+        - name: threadmem-api
+          image: threadmem-api:latest
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 25
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          env:
+            - name: AGENTSEA_HUB_URL
+              value: https://api.hub.dev.agentlabs.xyz
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASS
+              value: "abc12345"
+            - name: DB_HOST
+              value: postgres-service
+            - name: DB_NAME
+              value: threadmem
+            - name: DB_TYPE
+              value: postgres
+            - name: BRANCH
+              value: main
+            - name: SERVER_ADDRESS
+              value: https://threads.dev.agentlabs.xyz
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: threadmem-secrets
+                  key: ENCRYPTION_KEY
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

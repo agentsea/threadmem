@@ -1,8 +1,10 @@
 import uuid
 import time
 
-from sqlalchemy import Column, String, ForeignKey, Boolean, Float
+from sqlalchemy import Column, String, ForeignKey, Boolean, Float, Integer
 from sqlalchemy.orm import relationship, declarative_base
+
+from threadmem.server.models import V1UserProfile
 
 Base = declarative_base()
 
@@ -28,6 +30,7 @@ class RoleThreadRecord(Base):
     public = Column(Boolean, default=False)
     name = Column(String, nullable=True)
     meta_data = Column(String, nullable=True)
+    remote = Column(String, nullable=True)
     created = Column(Float, default=time.time)
     updated = Column(Float, default=time.time)
 
@@ -36,3 +39,23 @@ class RoleThreadRecord(Base):
         backref="role_thread",
         order_by="asc(RoleMessageRecord.created)",
     )
+
+
+class UserRecord(Base):
+    __tablename__ = "users"
+
+    email = Column(String, unique=True, index=True, primary_key=True)
+    display_name = Column(String)
+    handle = Column(String)
+    picture = Column(String)
+    created = Column(Integer)
+    updated = Column(Integer)
+
+    def to_v1_schema(self) -> V1UserProfile:
+        return V1UserProfile(
+            email=self.email,
+            display_name=self.display_name,
+            picture=self.picture,
+            created=self.created,
+            updated=self.updated,
+        )

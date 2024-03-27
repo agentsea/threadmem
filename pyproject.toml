@@ -11,10 +11,13 @@ packages = [{include = "threadmem"}]
 python = "^3.10"
 sqlalchemy = "^2.0.27"
 pydantic = "^2.6.3"
+requests = "^2.31.0"
+fastapi = {extras = ["all"], version = "^0.110.0"}
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
+ipykernel = "^6.29.3"
 
 [build-system]
 requires = ["poetry-core"]

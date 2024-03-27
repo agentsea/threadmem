@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: threadmem-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: threadmem-ui
+  template:
+    metadata:
+      labels:
+        app: threadmem-ui
+    spec:
+      containers:
+        - name: threadmem-ui
+          image: threadmem-ui:latest
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 25
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          env:
+            - name: REACT_APP_HUB_API_ADDR
+              value: https://api.hub.agentlabs.xyz
+            - name: REACT_APP_API_ADDR
+              value: https://api.threads.stg.agentlabs.xyz
