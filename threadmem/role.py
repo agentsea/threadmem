@@ -174,9 +174,9 @@ class RoleThread(WithDB):
                 self.refresh()
                 print("\nrefreshed task: ", self.__dict__)
                 return
-            except:
-                existing_task = None
-                raise
+            except Exception as e:
+                existing_thread = None
+                raise e
         else:
             self._messages.append(
                 RoleMessage(
@@ -254,9 +254,10 @@ class RoleThread(WithDB):
                     print(
                         "WARNING: current task version is different from remote, you could be overriding changes"
                     )
-            except:
-                existing_task = None
-            if existing_task:
+            except Exception as e:
+                existing_thread = None
+                raise e
+            if existing_thread:
                 print("\nupdating existing thread", existing_thread)
                 if self._version != new_version:
                     self._version = new_version

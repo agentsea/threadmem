@@ -60,7 +60,7 @@ class HubKeyProvider(KeyProvider, WithDB):
             )
 
     def create_key(self) -> str:
-        raise NotImplemented()
+        raise NotImplementedError("create_key is not implemented")
 
     def is_key(self, token: str) -> bool:
         if token.startswith("k."):
