@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Library Reference &mdash; agentd 0.1.0 documentation</title>
+  <title>Library Reference &mdash; threadmem 0.2.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,13 +15,13 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=01f34227"></script>
+        <script src="_static/documentation_options.js?v=000c92bf"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="DeepThread Library Reference" href="index.html" /> 
+    <link rel="prev" title="ThreadMem Library Reference" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            agentd
+            threadmem
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -99,7 +99,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">agentd</a>
+          <a href="index.html">threadmem</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -123,7 +123,20 @@
 <dt class="sig sig-object py" id="threadmem.RoleMessage">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">threadmem.</span></span><span class="sig-name descname"><span class="pre">RoleMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WithDB</span></code></p>
-<p>An role based style chat message</p>
+<p>A role-based chat message that supports text, optional images, and metadata.
+It can be marked as private and is associated with a specific thread and role.
+Each message is uniquely identified by an ID and records the creation time.</p>
+<p>Fields:</p>
+<ul class="simple">
+<li><p><strong>role (str):</strong> The role associated with the message.</p></li>
+<li><p><strong>text (str):</strong> The text content of the message.</p></li>
+<li><p><strong>thread_id (str):</strong> The ID of the thread this message belongs to.</p></li>
+<li><p><strong>images (List[str]):</strong> A list of image URLs associated with the message. Defaults to an empty list.</p></li>
+<li><p><strong>private (Optional[bool]):</strong> A flag indicating if the message is private. Defaults to False.</p></li>
+<li><p><strong>created (float):</strong> The timestamp of when the message was created. Defaults to the current time.</p></li>
+<li><p><strong>id (str):</strong> A unique identifier for the message. Defaults to a UUID4 string.</p></li>
+<li><p><strong>metadata (Optional[dict]):</strong> Additional metadata associated with the message. Defaults to None.</p></li>
+</ul>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.created">
 <span class="sig-name descname"><span class="pre">created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#threadmem.RoleMessage.created" title="Link to this definition"></a></dt>
@@ -132,17 +145,68 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.find">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.role.RoleMessage"><span class="pre">RoleMessage</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.find" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Finds and returns a list of RoleMessage instances based on the provided search criteria.</p>
+<p>This method queries the database for RoleMessage records that match the given keyword arguments.
+The results are ordered by the creation time of the messages in ascending order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments that are passed to the filter_by method of the database query.
+These arguments should correspond to the attributes of the RoleMessageRecord model.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">found_messages</span> <span class="o">=</span> <span class="n">RoleMessage</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s2">&quot;example_role&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of RoleMessage instances that match the search criteria.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.RoleMessage">RoleMessage</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.from_record">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RoleMessageRecord</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.role.RoleMessage"><span class="pre">RoleMessage</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.from_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.from_record" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Converts a RoleMessageRecord instance back into a RoleMessage instance.</p>
+<p>This method is used to reconstruct a RoleMessage object from its stored representation in the database.
+It takes a RoleMessageRecord object, which represents a row in the database, and converts it into a
+RoleMessage object by extracting and converting the stored fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>record</strong> (<em>RoleMessageRecord</em>) – The database record to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reconstructed RoleMessage object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.RoleMessage">RoleMessage</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.from_schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RoleMessageModel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.role.RoleMessage"><span class="pre">RoleMessage</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.from_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.from_schema" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Converts a RoleMessageModel instance into a RoleMessage instance.</p>
+<p>This method is used to create a RoleMessage object from a RoleMessageModel schema. It takes a RoleMessageModel
+object, which represents a structured input, possibly coming from an API request or another external source,
+and converts it into a RoleMessage object by directly mapping the schema fields to the RoleMessage object fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> (<em>RoleMessageModel</em>) – The schema to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The newly created RoleMessage object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.RoleMessage">RoleMessage</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.id">
@@ -172,7 +236,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.save" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Saves the current state of the RoleMessage instance to the database.</p>
+<p>This method converts the RoleMessage instance into a RoleMessageRecord (the database model representation)
+and merges it with the existing record in the database if it exists, or creates a new record if it does not.
+After merging, it commits the changes to the database to ensure the RoleMessage instance is saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>SQLAlchemyError</strong> – If there is an issue with database connectivity or the merge and commit operations.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.text">
@@ -187,12 +260,33 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.to_record">
 <span class="sig-name descname"><span class="pre">to_record</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RoleMessageRecord</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_record" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Converts the RoleMessage instance into a RoleMessageRecord for database storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An instance of RoleMessageRecord with fields populated from the RoleMessage instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>RoleMessageRecord</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.to_schema">
 <span class="sig-name descname"><span class="pre">to_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RoleMessageModel</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_schema" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Converts the current RoleMessage instance into a RoleMessageModel.</p>
+<p>This method is used to create a RoleMessageModel object from the current RoleMessage instance. It directly maps
+the fields of the RoleMessage instance to the corresponding fields in the RoleMessageModel, ensuring that the
+data structure is compatible for serialization or API response purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The RoleMessageModel object created from the RoleMessage instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>RoleMessageModel</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -200,41 +294,123 @@
 <dt class="sig sig-object py" id="threadmem.RoleThread">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">threadmem.</span></span><span class="sig-name descname"><span class="pre">RoleThread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WithDB</span></code></p>
-<p>A role based chat thread</p>
+<p>Represents a role-based chat thread where messages are organized based on roles.
+Each thread can be public or private, have a unique owner, and contain metadata
+for additional context. Threads are identified by a unique ID and can be
+versioned for tracking changes over time.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.delete" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Deletes the RoleThread instance from the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.find">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.role.RoleThread"><span class="pre">RoleThread</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.find" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Finds RoleThread instances based on various criteria.</p>
+<p>This method retrieves RoleThread instances based on the provided keyword arguments.
+If a remote server is specified, it sends a request to the remote server to fetch the threads.
+If no remote server is specified, it retrieves the threads from the local database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>remote</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – The remote server URL to fetch threads from. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments for filtering the threads.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">remote_url</span> <span class="o">=</span> <span class="s2">&quot;http://example.com&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">owner_id</span> <span class="o">=</span> <span class="s2">&quot;user123&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">found_threads</span> <span class="o">=</span> <span class="n">RoleThread</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">remote</span><span class="o">=</span><span class="n">remote_url</span><span class="p">,</span> <span class="n">owner_id</span><span class="o">=</span><span class="n">owner_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">found_threads</span><span class="p">)</span>
+<span class="go">[RoleThread(owner_id=&#39;user123&#39;, public=True, name=&#39;Thread Name&#39;, ...)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of RoleThread instances that match the filter criteria.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#threadmem.RoleThread" title="threadmem.RoleThread">RoleThread</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.from_record">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RoleThreadRecord</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.role.RoleThread"><span class="pre">RoleThread</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.from_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.from_record" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Creates an instance of RoleThread from a RoleThreadRecord.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>record</strong> (<em>RoleThreadRecord</em>) – The database record to convert into a RoleThread instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of RoleThread with properties populated from the database record.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.RoleThread">RoleThread</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.from_schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RoleThreadModel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.role.RoleThread"><span class="pre">RoleThread</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.from_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.from_schema" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Creates an instance of RoleThread from a RoleThreadModel.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.generate_version_hash">
 <span class="sig-name descname"><span class="pre">generate_version_hash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.generate_version_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.generate_version_hash" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generates a version hash for the RoleThread instance.</p>
+<p>This method serializes the RoleThread instance into a JSON string, ensuring the keys are sorted to maintain
+consistency. It then encodes the JSON string into bytes and computes a SHA-256 hash of these bytes. The resulting
+hash is used as the version identifier for the RoleThread instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A hexadecimal string representing the SHA-256 hash of the serialized RoleThread instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="threadmem.RoleThread.id">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#threadmem.RoleThread.id" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the unique identifier of the RoleThread instance.</p>
+<p>This property method returns the unique ID of the RoleThread, which is generated upon the creation of a new RoleThread instance. The ID is a UUID4 string that uniquely identifies the thread among all others.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The unique identifier of the RoleThread instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.messages">
 <span class="sig-name descname"><span class="pre">messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_private</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.role.RoleMessage"><span class="pre">RoleMessage</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.messages" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a list of messages associated with the RoleThread.</p>
+<p>This method filters messages based on the <cite>include_private</cite> parameter. If <cite>include_private</cite> is True,
+all messages are returned. If False, only public messages are returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>include_private</strong> (<em>bool</em><em>, </em><em>optional</em>) – A flag to determine if private messages should be included.
+Defaults to True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of RoleMessage instances that match the filter criteria.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.RoleMessage">RoleMessage</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="threadmem.RoleThread.metadata">
@@ -257,7 +433,25 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.post">
 <span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.post" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Posts a message to the RoleThread.</p>
+<p>This method allows for posting a message to the RoleThread, optionally including images,
+marking the message as private, and attaching metadata. If the RoleThread is marked as remote,
+the message is posted to a remote server. Otherwise, it is stored locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role</strong> (<em>str</em>) – The role associated with the message.</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) – The message text.</p></li>
+<li><p><strong>images</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of image URLs. Defaults to an empty list.</p></li>
+<li><p><strong>private</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the message is private. Defaults to False.</p></li>
+<li><p><strong>metadata</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em><em>, </em><em>optional</em>) – Additional metadata for the message. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – If an error occurs while posting the message to a remote server.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="threadmem.RoleThread.public">
@@ -268,7 +462,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.refresh">
 <span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.refresh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.refresh" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Refreshes the RoleThread instance from the remote server.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="threadmem.RoleThread.remote">
@@ -279,7 +474,11 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.save" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Saves the RoleThread instance to the database.</p>
+<p>This method saves the RoleThread instance to the database.
+If the thread is remote, it sends a request to the remote server to update or create the thread.
+If the thread is local, it saves the thread to the database.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_oai">
@@ -290,17 +489,38 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_record">
 <span class="sig-name descname"><span class="pre">to_record</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RoleThreadRecord</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_record" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Converts the RoleThread instance into a RoleThreadRecord for database storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An instance of RoleThreadRecord with fields populated from the RoleThread instance.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>RoleThreadRecord</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_schema">
 <span class="sig-name descname"><span class="pre">to_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RoleThreadModel</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_schema" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Converts the RoleThread instance into a RoleThreadModel for API representation.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_update_schema">
 <span class="sig-name descname"><span class="pre">to_update_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UpdateRoleThreadModel</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_update_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_update_schema" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generates an UpdateRoleThreadModel instance with current thread properties.</p>
+<p>This method prepares the data for updating an existing RoleThread by creating an UpdateRoleThreadModel instance.
+It includes the thread’s name, visibility (public or private), and metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An instance populated with the current thread’s name, visibility, and metadata.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>UpdateRoleThreadModel</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -310,7 +530,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="DeepThread Library Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="ThreadMem Library Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
