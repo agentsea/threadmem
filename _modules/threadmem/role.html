@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>threadmem.role &mdash; agentd 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=01f34227"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            agentd
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Library Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">-------</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://agentsea.github.io">Back to Agentsea Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">agentd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">threadmem.role</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for threadmem.role</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">asc</span>
+
+<span class="kn">from</span> <span class="nn">threadmem.db.models</span> <span class="kn">import</span> <span class="n">RoleMessageRecord</span><span class="p">,</span> <span class="n">RoleThreadRecord</span>
+<span class="kn">from</span> <span class="nn">threadmem.db.conn</span> <span class="kn">import</span> <span class="n">WithDB</span>
+<span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RoleMessageModel</span><span class="p">,</span>
+    <span class="n">RoleThreadModel</span><span class="p">,</span>
+    <span class="n">UpdateRoleThreadModel</span><span class="p">,</span>
+    <span class="n">RoleThreadsModel</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">HUB_API_KEY_ENV</span>
+
+
+<span class="n">R</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;RoleThread&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RoleMessage">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RoleMessage</span><span class="p">(</span><span class="n">WithDB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An role based style chat message&quot;&quot;&quot;</span>
+
+    <span class="n">role</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">thread_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">private</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">created</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()))</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RoleMessage.to_record">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.to_record">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoleMessageRecord</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">RoleMessageRecord</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">images</span><span class="o">=</span><span class="n">images</span><span class="p">,</span>
+            <span class="n">private</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private</span><span class="p">,</span>
+            <span class="n">created</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">,</span>
+            <span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span>
+            <span class="n">meta_data</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">thread_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleMessage.find">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.find">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;RoleMessage&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
+            <span class="n">records</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RoleMessageRecord</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">asc</span><span class="p">(</span><span class="n">RoleMessageRecord</span><span class="o">.</span><span class="n">created</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_record</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RoleMessage.from_record">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.from_record">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">RoleMessageRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleMessage&quot;</span><span class="p">:</span>
+        <span class="n">metadata_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">meta_data</span><span class="p">)</span> <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">meta_data</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">images_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">images</span><span class="p">)</span> <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">images</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">private</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">private</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">created</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">created</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">role</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata_dict</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">images_list</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">thread_id</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">thread_id</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="RoleMessage.save">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_record</span><span class="p">()</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RoleMessage.from_schema">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.from_schema">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">RoleMessageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleMessage&quot;</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">images</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">private</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">private</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">created</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">created</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">role</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">thread_id</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">thread_id</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="RoleMessage.to_schema">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.to_schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoleMessageModel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">RoleMessageModel</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">images</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">,</span>
+            <span class="n">private</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private</span><span class="p">,</span>
+            <span class="n">created</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">thread_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RoleThread">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread">[docs]</a>
+<span class="k">class</span> <span class="nc">RoleThread</span><span class="p">(</span><span class="n">WithDB</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A role based chat thread&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">owner_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">public</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">remote</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RoleMessage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_owner_id</span> <span class="o">=</span> <span class="n">owner_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">public</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_created</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updated</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span> <span class="o">=</span> <span class="n">remote</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">version</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_version_hash</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RoleThread.generate_version_hash">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.generate_version_hash">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_version_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">task_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">hash_version</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">task_data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">hash_version</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+
+<div class="viewcode-block" id="RoleThread.post">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.post">[docs]</a>
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">role</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">images</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">private</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!posting msg to remote task&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">existing_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
+                    <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">/msg&quot;</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">role</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">:</span> <span class="n">images</span><span class="p">},</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">found existing thread&quot;</span><span class="p">,</span> <span class="n">existing_thread</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">existing_thread</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;WARNING: current thread version is different from remote, you could be overriding changes&quot;</span>
+                    <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshing task...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshed task: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">existing_thread</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">RoleMessage</span><span class="p">(</span>
+                    <span class="n">role</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="p">,</span>
+                    <span class="n">thread_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span>
+                    <span class="n">images</span><span class="o">=</span><span class="n">images</span><span class="p">,</span>
+                    <span class="n">private</span><span class="o">=</span><span class="n">private</span><span class="p">,</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.messages">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.messages">[docs]</a>
+    <span class="k">def</span> <span class="nf">messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_private</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">RoleMessage</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">include_private</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">private</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.to_record">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_record">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoleThreadRecord</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">RoleThreadRecord</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span>
+            <span class="n">owner_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner_id</span><span class="p">,</span>
+            <span class="n">public</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_public</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">to_record</span><span class="p">()</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
+            <span class="n">meta_data</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">remote</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
+            <span class="n">created</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_created</span><span class="p">,</span>
+            <span class="n">updated</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_updated</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.from_record">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.from_record">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">RoleThreadRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleThread&quot;</span><span class="p">:</span>
+        <span class="n">metadata_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">meta_data</span><span class="p">)</span> <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">meta_data</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_owner_id</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">owner_id</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">public</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">metadata_dict</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_created</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">created</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_updated</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">updated</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_remote</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">remote</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_messages</span> <span class="o">=</span> <span class="p">[</span><span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_record</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">messages</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.to_update_schema">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_update_schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_update_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateRoleThreadModel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">UpdateRoleThreadModel</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
+            <span class="n">public</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_public</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.save">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!saving thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+        <span class="c1"># Generate the new version hash</span>
+        <span class="n">new_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_version_hash</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!saving remote thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">existing_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">found existing thread&quot;</span><span class="p">,</span> <span class="n">existing_thread</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">existing_thread</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;WARNING: current task version is different from remote, you could be overriding changes&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">existing_thread</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="k">if</span> <span class="n">existing_thread</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">updating existing thread&quot;</span><span class="p">,</span> <span class="n">existing_thread</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="n">new_version</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">new_version</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Version updated to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
+                    <span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">json_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_update_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">updated existing thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">creating new thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="n">new_version</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">new_version</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Version updated to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
+                    <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;/v1/rolethreads&quot;</span><span class="p">,</span>
+                    <span class="n">json_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">created new thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!saving local db thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="n">new_version</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">new_version</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Version updated to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_record</span><span class="p">())</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.find">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.find">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">remote</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;RoleThread&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">remote</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;finding remote tasks for: &quot;</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">remote_response</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                <span class="n">remote</span><span class="p">,</span>
+                <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/v1/rolethreads&quot;</span><span class="p">,</span>
+                <span class="n">json_data</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">:</span> <span class="s2">&quot;created_desc&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">threads</span> <span class="o">=</span> <span class="n">RoleThreadsModel</span><span class="p">(</span><span class="o">**</span><span class="n">remote_response</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">remote_response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">threads</span><span class="o">.</span><span class="n">threads</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                    <span class="n">thread</span><span class="o">.</span><span class="n">_remote</span> <span class="o">=</span> <span class="n">remote</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">returning task: &quot;</span><span class="p">,</span> <span class="n">thread</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
+                <span class="n">records</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RoleThreadRecord</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">asc</span><span class="p">(</span><span class="n">RoleThreadRecord</span><span class="o">.</span><span class="n">created</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_record</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">owner_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the owner ID of the thread.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">public</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the thread is public.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_public</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name of the thread.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the name of the thread.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">remote</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remote status of the thread.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the metadata of the thread.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span>
+
+    <span class="nd">@metadata</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the metadata of the thread.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="RoleThread.to_oai">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_oai">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_oai</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_private</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a RoleThread instance into a format compatible with OpenAI chat completions.&quot;&quot;&quot;</span>
+        <span class="n">formatted_messages</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># TODO: support images</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">(</span><span class="n">include_private</span><span class="o">=</span><span class="n">include_private</span><span class="p">):</span>
+            <span class="n">formatted_message</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
+            <span class="n">formatted_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">formatted_message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="n">formatted_messages</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.from_schema">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.from_schema">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">RoleThreadModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleThread&quot;</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_owner_id</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">owner_id</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">public</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_messages</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">msg_schema</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">messages</span>
+        <span class="p">]</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_created</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">created</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_updated</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">updated</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.to_schema">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoleThreadModel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">RoleThreadModel</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span>
+            <span class="n">owner_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner_id</span><span class="p">,</span>
+            <span class="n">public</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_public</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">],</span>
+            <span class="n">created</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_created</span><span class="p">,</span>
+            <span class="n">updated</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_updated</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.delete">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_record</span><span class="p">())</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_remote_request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">json_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">auth_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">R</span><span class="p">]]:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">addr</span><span class="si">}{</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_token</span><span class="p">:</span>
+            <span class="n">auth_token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">HUB_API_KEY_ENV</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_token</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hub API key not found, set $</span><span class="si">{</span><span class="n">HUB_API_KEY_ENV</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!auth_token: </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread GET with url: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread GET with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread POST with: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread POST with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread POST with data: &quot;</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;PUT&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread PUT with: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread PUT with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread PUT with data: &quot;</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread DELETE with: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread DELETE with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HTTP Error:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Status Code:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Response Body:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Raw Response:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="c1"># print(&quot;\nresponse: &quot;, response.__dict__)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">esponse.status_code: &quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="c1"># print(&quot;\nresponse_json: &quot;, response_json)</span>
+                <span class="k">return</span> <span class="n">response_json</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Raw Response:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+<div class="viewcode-block" id="RoleThread.refresh">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.refresh">[docs]</a>
+    <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auth_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!refreshing thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!refreshing remote thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="n">remote_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
+                    <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">auth_token</span><span class="o">=</span><span class="n">auth_token</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">found remote thread&quot;</span><span class="p">,</span> <span class="n">remote_thread</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">remote_thread</span><span class="p">:</span>
+                    <span class="n">schema</span> <span class="o">=</span> <span class="n">RoleThreadModel</span><span class="p">(</span><span class="o">**</span><span class="n">remote_thread</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">public</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">name</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">metadata</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">msg_schema</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">msg_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">messages</span>
+                    <span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_updated</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">updated</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshed remote thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Refresh is only supported for remote threads&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Kentauros AI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
