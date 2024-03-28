@@ -1,16 +1,18 @@
 [tool.poetry]
-name = "deepthread"
-version = "0.1.5"
-description = "Rich threads for AI agents"
+name = "threadmem"
+version = "0.2.2"
+description = "Thread memory for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
 license = "Apache 2.0"
 readme = "README.md"
-packages = [{include = "deepthread"}]
+packages = [{include = "threadmem"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 sqlalchemy = "^2.0.27"
 pydantic = "^2.6.3"
+requests = "^2.31.0"
+fastapi = {extras = ["all"], version = "^0.110.0"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -20,6 +22,7 @@ recommonmark = "^0.7.1"
 flake8 = "^7.0.0"
 black = "^24.2.0"
 pytest = "^8.0.2"
+ipykernel = "^6.29.3"
 
 [build-system]
 requires = ["poetry-core"]

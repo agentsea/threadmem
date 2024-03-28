@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: threadmem-cert
+spec:
+  domains:
+    - api.threads.stg.agentlabs.xyz
+    - threads.stg.agentlabs.xyz

@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: threadmem-ingress
+  annotations:
+    ingressClassName: "gce"
+    networking.gke.io/managed-certificates: threadmem-cert
+    kubernetes.io/ingress.global-static-ip-name: threadmem-main
+spec:
+  rules:
+    - host: api.threads.stg.agentlabs.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: threadmem-api-service
+                port:
+                  number: 80
+    - host: threads.stg.agentlabs.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: threadmem-ui-service
+                port:
+                  number: 80
