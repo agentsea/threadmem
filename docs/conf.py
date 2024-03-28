@@ -9,10 +9,10 @@ import sys
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "agentd"
+project = "threadmem"
 copyright = "2024, Kentauros AI"
 author = "Kentauros AI"
-release = "0.1.0"
+release = "0.2.2"
 
 extensions = [
     "sphinx.ext.autodoc",

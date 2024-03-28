@@ -25,8 +25,29 @@ R = TypeVar("R", bound="RoleThread")
 
 @dataclass
 class RoleMessage(WithDB):
-    """An role based style chat message"""
+    """
+    A role-based chat message that supports text, optional images, and metadata. 
+    It can be marked as private and is associated with a specific thread and role. 
+    Each message is uniquely identified by an ID and records the creation time.
 
+    Fields:
+
+    - **role (str):** The role associated with the message.
+
+    - **text (str):** The text content of the message.
+
+    - **thread_id (str):** The ID of the thread this message belongs to.
+
+    - **images (List[str]):** A list of image URLs associated with the message. Defaults to an empty list.
+
+    - **private (Optional[bool]):** A flag indicating if the message is private. Defaults to False.
+
+    - **created (float):** The timestamp of when the message was created. Defaults to the current time.
+
+    - **id (str):** A unique identifier for the message. Defaults to a UUID4 string.
+    
+    - **metadata (Optional[dict]):** Additional metadata associated with the message. Defaults to None.
+    """
     role: str
     text: str
     thread_id: str
@@ -40,6 +61,12 @@ class RoleMessage(WithDB):
         self.save()
 
     def to_record(self) -> RoleMessageRecord:
+        """
+        Converts the RoleMessage instance into a RoleMessageRecord for database storage.
+
+        Returns:
+            RoleMessageRecord: An instance of RoleMessageRecord with fields populated from the RoleMessage instance.
+        """
         metadata = json.dumps(self.metadata) if self.metadata else None
         images = json.dumps(self.images) if self.images else None
         return RoleMessageRecord(
@@ -55,6 +82,22 @@ class RoleMessage(WithDB):
 
     @classmethod
     def find(cls, **kwargs) -> List["RoleMessage"]:
+        """
+        Finds and returns a list of RoleMessage instances based on the provided search criteria.
+
+        This method queries the database for RoleMessage records that match the given keyword arguments. 
+        The results are ordered by the creation time of the messages in ascending order.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments that are passed to the filter_by method of the database query. 
+                      These arguments should correspond to the attributes of the RoleMessageRecord model.        
+       
+        Examples:
+            >>> found_messages = RoleMessage.find(role="example_role")
+
+        Returns:
+            List[RoleMessage]: A list of RoleMessage instances that match the search criteria.
+        """
         for db in cls.get_db():
             records = (
                 db.query(RoleMessageRecord)
@@ -66,6 +109,19 @@ class RoleMessage(WithDB):
 
     @classmethod
     def from_record(cls, record: RoleMessageRecord) -> "RoleMessage":
+        """
+        Converts a RoleMessageRecord instance back into a RoleMessage instance.
+
+        This method is used to reconstruct a RoleMessage object from its stored representation in the database. 
+        It takes a RoleMessageRecord object, which represents a row in the database, and converts it into a 
+        RoleMessage object by extracting and converting the stored fields.
+
+        Args:
+            record (RoleMessageRecord): The database record to convert.
+
+        Returns:
+            RoleMessage: The reconstructed RoleMessage object.
+        """
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
         images_list = json.loads(record.images) if record.images else []
         obj = cls.__new__(cls)
@@ -80,6 +136,16 @@ class RoleMessage(WithDB):
         return obj
 
     def save(self) -> None:
+        """
+        Saves the current state of the RoleMessage instance to the database.
+
+        This method converts the RoleMessage instance into a RoleMessageRecord (the database model representation) 
+        and merges it with the existing record in the database if it exists, or creates a new record if it does not. 
+        After merging, it commits the changes to the database to ensure the RoleMessage instance is saved.
+
+        Raises:
+            SQLAlchemyError: If there is an issue with database connectivity or the merge and commit operations.
+        """
         for db in self.get_db():
             record = self.to_record()
             db.merge(record)
@@ -87,6 +153,19 @@ class RoleMessage(WithDB):
 
     @classmethod
     def from_schema(cls, schema: RoleMessageModel) -> "RoleMessage":
+        """
+        Converts a RoleMessageModel instance into a RoleMessage instance.
+
+        This method is used to create a RoleMessage object from a RoleMessageModel schema. It takes a RoleMessageModel 
+        object, which represents a structured input, possibly coming from an API request or another external source, 
+        and converts it into a RoleMessage object by directly mapping the schema fields to the RoleMessage object fields.
+
+        Args:
+            schema (RoleMessageModel): The schema to convert.
+
+        Returns:
+            RoleMessage: The newly created RoleMessage object.
+        """
         obj = cls.__new__(cls)
         obj.id = str(schema.id)
         obj.text = schema.text
@@ -99,6 +178,16 @@ class RoleMessage(WithDB):
         return obj
 
     def to_schema(self) -> RoleMessageModel:
+        """
+        Converts the current RoleMessage instance into a RoleMessageModel.
+
+        This method is used to create a RoleMessageModel object from the current RoleMessage instance. It directly maps 
+        the fields of the RoleMessage instance to the corresponding fields in the RoleMessageModel, ensuring that the 
+        data structure is compatible for serialization or API response purposes.
+
+        Returns:
+            RoleMessageModel: The RoleMessageModel object created from the RoleMessage instance.
+        """
         return RoleMessageModel(
             id=self.id,
             role=self.role,
@@ -112,7 +201,12 @@ class RoleMessage(WithDB):
 
 
 class RoleThread(WithDB):
-    """A role based chat thread"""
+    """
+    Represents a role-based chat thread where messages are organized based on roles. 
+    Each thread can be public or private, have a unique owner, and contain metadata 
+    for additional context. Threads are identified by a unique ID and can be 
+    versioned for tracking changes over time.
+    """
 
     def __init__(
         self,
@@ -124,6 +218,22 @@ class RoleThread(WithDB):
         version: Optional[str] = None,
     ) -> None:
         self._messages: List[RoleMessage] = []
+        """
+        Initializes a new instance of the RoleThread class.
+
+        This constructor initializes a role-based chat thread with various attributes including owner ID, visibility, 
+        name, metadata, remote location, and version. It generates a unique ID for the thread, sets the creation and 
+        update times to the current time, and if no version is provided, generates a version hash based on the thread's 
+        schema. Finally, it saves the new thread instance to the database.
+
+        Args:
+            owner_id (Optional[str]): The ID of the thread owner. Defaults to None.
+            public (bool): A flag indicating whether the thread is public. Defaults to False.
+            name (Optional[str]): The name of the thread. Defaults to None.
+            metadata (Optional[dict]): A dictionary containing metadata about the thread. Defaults to None.
+            remote (Optional[str]): The remote location of the thread, if any. Defaults to None.
+            version (Optional[str]): The version of the thread. If not provided, a version hash is generated. Defaults to None.
+        """
         self._owner_id = owner_id
         self._public = public
         self._id = str(uuid.uuid4())
@@ -139,12 +249,30 @@ class RoleThread(WithDB):
         self.save()
 
     def generate_version_hash(self) -> str:
+        """
+        Generates a version hash for the RoleThread instance.
+
+        This method serializes the RoleThread instance into a JSON string, ensuring the keys are sorted to maintain 
+        consistency. It then encodes the JSON string into bytes and computes a SHA-256 hash of these bytes. The resulting 
+        hash is used as the version identifier for the RoleThread instance.
+
+        Returns:
+            str: A hexadecimal string representing the SHA-256 hash of the serialized RoleThread instance.
+        """
         task_data = json.dumps(self.to_schema().model_dump(), sort_keys=True)
         hash_version = hashlib.sha256(task_data.encode("utf-8")).hexdigest()
         return hash_version
 
     @property
     def id(self) -> str:
+        """
+        Retrieves the unique identifier of the RoleThread instance.
+
+        This property method returns the unique ID of the RoleThread, which is generated upon the creation of a new RoleThread instance. The ID is a UUID4 string that uniquely identifies the thread among all others.
+
+        Returns:
+            str: The unique identifier of the RoleThread instance.
+        """
         return self._id
 
     def post(
@@ -155,6 +283,23 @@ class RoleThread(WithDB):
         private: bool = False,
         metadata: Optional[dict] = None,
     ) -> None:
+        """
+        Posts a message to the RoleThread.
+
+        This method allows for posting a message to the RoleThread, optionally including images, 
+        marking the message as private, and attaching metadata. If the RoleThread is marked as remote, 
+        the message is posted to a remote server. Otherwise, it is stored locally.
+
+        Args:
+            role (str): The role associated with the message.
+            msg (str): The message text.
+            images (List[str], optional): A list of image URLs. Defaults to an empty list.
+            private (bool, optional): Whether the message is private. Defaults to False.
+            metadata (Optional[dict], optional): Additional metadata for the message. Defaults to None.
+
+        Raises:
+            Exception: If an error occurs while posting the message to a remote server.
+        """
         if self._remote:
             print("\n!posting msg to remote task", self._id)
             try:
@@ -191,6 +336,19 @@ class RoleThread(WithDB):
             self.save()
 
     def messages(self, include_private: bool = True) -> List[RoleMessage]:
+        """
+        Retrieves a list of messages associated with the RoleThread.
+
+        This method filters messages based on the `include_private` parameter. If `include_private` is True, 
+        all messages are returned. If False, only public messages are returned.
+
+        Args:
+            include_private (bool, optional): A flag to determine if private messages should be included. 
+                                               Defaults to True.
+
+        Returns:
+            List[RoleMessage]: A list of RoleMessage instances that match the filter criteria.
+        """
         if include_private:
             return self._messages
 
@@ -202,6 +360,12 @@ class RoleThread(WithDB):
         return out
 
     def to_record(self) -> RoleThreadRecord:
+        """
+        Converts the RoleThread instance into a RoleThreadRecord for database storage.
+
+        Returns:
+            RoleThreadRecord: An instance of RoleThreadRecord with fields populated from the RoleThread instance.
+        """
         metadata = json.dumps(self._metadata) if self._metadata else None
         return RoleThreadRecord(
             id=self._id,
@@ -217,6 +381,15 @@ class RoleThread(WithDB):
 
     @classmethod
     def from_record(cls, record: RoleThreadRecord) -> "RoleThread":
+        """
+        Creates an instance of RoleThread from a RoleThreadRecord.
+
+        Args:
+            record (RoleThreadRecord): The database record to convert into a RoleThread instance.
+
+        Returns:
+            RoleThread: An instance of RoleThread with properties populated from the database record.
+        """
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
         obj = cls.__new__(cls)
         obj._id = record.id
@@ -231,6 +404,15 @@ class RoleThread(WithDB):
         return obj
 
     def to_update_schema(self) -> UpdateRoleThreadModel:
+        """
+        Generates an UpdateRoleThreadModel instance with current thread properties.
+
+        This method prepares the data for updating an existing RoleThread by creating an UpdateRoleThreadModel instance. 
+        It includes the thread's name, visibility (public or private), and metadata.
+
+        Returns:
+            UpdateRoleThreadModel: An instance populated with the current thread's name, visibility, and metadata.
+        """
         return UpdateRoleThreadModel(
             name=self._name,
             public=self._public,
@@ -238,6 +420,13 @@ class RoleThread(WithDB):
         )
 
     def save(self) -> None:
+        """
+        Saves the RoleThread instance to the database.
+
+        This method saves the RoleThread instance to the database. 
+        If the thread is remote, it sends a request to the remote server to update or create the thread. 
+        If the thread is local, it saves the thread to the database.
+        """
         print("\n!saving thread", self._id)
         # Generate the new version hash
         new_version = self.generate_version_hash()
@@ -295,6 +484,27 @@ class RoleThread(WithDB):
 
     @classmethod
     def find(cls, remote: Optional[str] = None, **kwargs) -> List["RoleThread"]:
+        """
+        Finds RoleThread instances based on various criteria.
+
+        This method retrieves RoleThread instances based on the provided keyword arguments. 
+        If a remote server is specified, it sends a request to the remote server to fetch the threads. 
+        If no remote server is specified, it retrieves the threads from the local database.
+
+        Args:
+            remote (Optional[str]): The remote server URL to fetch threads from. Defaults to None.
+            **kwargs: Additional keyword arguments for filtering the threads.
+
+        Example:
+            >>> remote_url = "http://example.com"
+            >>> owner_id = "user123"
+            >>> found_threads = RoleThread.find(remote=remote_url, owner_id=owner_id)
+            >>> print(found_threads)
+            [RoleThread(owner_id='user123', public=True, name='Thread Name', ...)]
+
+        Returns:
+            List[RoleThread]: A list of RoleThread instances that match the filter criteria.
+        """
         if remote:
             print("finding remote tasks for: ", remote, kwargs)
             remote_response = cls._remote_request(
@@ -368,6 +578,9 @@ class RoleThread(WithDB):
 
     @classmethod
     def from_schema(cls, schema: RoleThreadModel) -> "RoleThread":
+        """
+        Creates an instance of RoleThread from a RoleThreadModel.
+        """
         obj = cls.__new__(cls)
         obj._id = str(schema.id)
         obj._owner_id = schema.owner_id
@@ -382,6 +595,9 @@ class RoleThread(WithDB):
         return obj
 
     def to_schema(self) -> RoleThreadModel:
+        """
+        Converts the RoleThread instance into a RoleThreadModel for API representation.
+        """
         return RoleThreadModel(
             id=self._id,
             owner_id=self._owner_id,
@@ -394,6 +610,9 @@ class RoleThread(WithDB):
         )
 
     def delete(self) -> None:
+        """
+        Deletes the RoleThread instance from the database.
+        """
         if self._remote:
             self._remote_request(self._remote, "DELETE", f"/v1/rolethreads/{self._id}")
         else:
@@ -465,6 +684,9 @@ class RoleThread(WithDB):
             raise e
 
     def refresh(self, auth_token: Optional[str] = None) -> None:
+        """
+        Refreshes the RoleThread instance from the remote server.
+        """
         print("\n!refreshing thread", self._id)
         if self._remote:
             print("\n!refreshing remote thread", self._id)
