@@ -8,7 +8,6 @@ from threadmem.server.models import V1UserProfile
 from threadmem.db.models import UserRecord
 from threadmem.db.conn import WithDB
 from .key import KeyProvider, default_key_provider, MockProvider
-from .user import User
 
 
 class AuthProvider(ABC):

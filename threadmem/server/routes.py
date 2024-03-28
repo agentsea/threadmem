@@ -1,5 +1,4 @@
 from typing import Annotated
-import time
 
 from fastapi import APIRouter, Depends, HTTPException
 from threadmem import RoleThread

@@ -16,9 +16,18 @@ fastapi = {extras = ["all"], version = "^0.110.0"}
 
 
 [tool.poetry.group.dev.dependencies]
+sphinx = "^7.2.6"
+sphinx-rtd-theme = "^2.0.0"
+recommonmark = "^0.7.1"
+flake8 = "^7.0.0"
+black = "^24.2.0"
 pytest = "^8.0.2"
 ipykernel = "^6.29.3"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+build-docs = "scripts.build_docs:main"
+lint = "scripts.lint:main"
