@@ -1,7 +1,7 @@
 Library Reference
 =================
 
-.. automodule:: deepthread
+.. automodule:: threadmem
    :members:
    :undoc-members:
    :show-inheritance:
