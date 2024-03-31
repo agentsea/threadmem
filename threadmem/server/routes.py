@@ -10,6 +10,8 @@ from .models import (
     RoleThreadsModel,
     PostMessageModel,
     UpdateRoleThreadModel,
+    RoleModel,
+    DeleteRoleModel,
 )
 from threadmem.auth.transport import get_current_user
 
@@ -65,7 +67,7 @@ async def delete_role_thread(
     return {"message": "Thread deleted successfully"}
 
 
-@router.post("/v1/rolethreads/{id}/msg", response_model=RoleThreadModel)
+@router.post("/v1/rolethreads/{id}/msgs")
 async def post_role_thread_msg(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)],
     id: str,
@@ -78,7 +80,39 @@ async def post_role_thread_msg(
     thread = thread[0]
     thread.post(data.role, data.msg, data.images)
     print("\nposted message to thread: ", thread.__dict__)
-    return thread.to_schema()
+    return
+
+
+@router.post("/v1/rolethreads/{id}/roles")
+async def add_role_to_thread(
+    current_user: Annotated[V1UserProfile, Depends(get_current_user)],
+    id: str,
+    data: RoleModel,
+):
+    print("\nadding role to thread: ", data)
+    thread = RoleThread.find(id=id, owner_id=current_user.email)
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    thread = thread[0]
+    thread.add_role(data)
+    print("\nadded role to thread: ", thread.__dict__)
+    return
+
+
+@router.delete("/v1/rolethreads/{id}/roles")
+async def remove_role_to_thread(
+    current_user: Annotated[V1UserProfile, Depends(get_current_user)],
+    id: str,
+    data: DeleteRoleModel,
+):
+    print("\nremoving role to thread: ", data)
+    thread = RoleThread.find(id=id, owner_id=current_user.email)
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    thread = thread[0]
+    thread.remove_role(data.name)
+    print("\nremoved role to thread: ", thread.__dict__)
+    return
 
 
 @router.put("/v1/rolethreads/{id}", response_model=RoleThreadModel)

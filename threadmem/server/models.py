@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class RoleMessageModel(BaseModel):
@@ -13,6 +13,18 @@ class RoleMessageModel(BaseModel):
     thread_id: str
 
 
+class DeleteRoleModel(BaseModel):
+    name: str
+
+
+class RoleModel(BaseModel):
+    name: str
+    user_id: str
+    user_name: str
+    icon: str
+    description: Optional[str] = None
+
+
 class RoleThreadModel(BaseModel):
     owner_id: Optional[str] = None
     public: bool
@@ -20,6 +32,7 @@ class RoleThreadModel(BaseModel):
     metadata: Optional[dict] = None
     id: str
     messages: List[RoleMessageModel]
+    role_mapping: Dict[str, RoleModel]
     created: float
     updated: float
 

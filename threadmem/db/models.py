@@ -29,6 +29,7 @@ class RoleThreadRecord(Base):
     owner_id = Column(String, nullable=True)
     public = Column(Boolean, default=False)
     name = Column(String, nullable=True)
+    role_mapping = Column(String, nullable=True)
     meta_data = Column(String, nullable=True)
     remote = Column(String, nullable=True)
     created = Column(Float, default=time.time)
