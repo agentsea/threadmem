@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "threadmem"
-version = "0.2.3"
+version = "0.2.4"
 description = "Thread memory for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
 license = "Apache 2.0"
@@ -12,7 +12,7 @@ python = "^3.10"
 sqlalchemy = "^2.0.27"
 pydantic = "^2.6.3"
 requests = "^2.31.0"
-fastapi = {extras = ["all"], version = "^0.110.0"}
+fastapi = {version = "^0.109", extras = ["all"]}
 
 
 [tool.poetry.group.dev.dependencies]
