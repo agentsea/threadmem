@@ -650,6 +650,7 @@ class RoleThread(WithDB):
         obj._messages = [
             RoleMessage.from_schema(msg_schema) for msg_schema in schema.messages
         ]
+        obj._role_mapping = schema.role_mapping
         obj._created = schema.created
         obj._updated = schema.updated
         obj._version = schema.version
@@ -669,6 +670,7 @@ class RoleThread(WithDB):
             messages=[message.to_schema() for message in self._messages],
             created=self._created,
             updated=self._updated,
+            role_mapping=self._role_mapping,
         )
 
     def delete(self) -> None:
