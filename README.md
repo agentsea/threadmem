@@ -22,7 +22,7 @@
   <br>
 </p>
 
-Threadmem enables robust chat experiences with AI agents. It offers a Python backend for managing thread state as well as a React chat interface.
+Threadmem is a simple tool that helps manage chat conversations with language models.
 
 ## Backend
 
