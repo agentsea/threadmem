@@ -273,6 +273,7 @@ class RoleThread(WithDB):
         if role.name in self._role_mapping:
             raise ValueError(f"Role {role.name} already exists")
         self._role_mapping[role.name] = role
+        self.save()
 
     def remove_role(self, name: str) -> None:
         if self._remote:
@@ -294,6 +295,7 @@ class RoleThread(WithDB):
         if name not in self._role_mapping:
             raise ValueError(f"Role {name} does not exist")
         self._role_mapping.pop(name)
+        self.save()
 
     def generate_version_hash(self) -> str:
         """
