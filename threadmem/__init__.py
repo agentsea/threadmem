@@ -1,4 +1,4 @@
-from .role import RoleMessage, RoleThread
+from .role import RoleMessage, RoleThread, RoleModel, RoleThreadsModel, RoleThreadModel
 
 __all__ = ["RoleMessage", "RoleThread"]
 
