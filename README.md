@@ -36,17 +36,33 @@ pip install threadmem
 
 #### Role Threads
 
-Create a role based thread and store in a local sqlite database
+Role based threads are useful for managing openai-style chat schemas.
 
 ```python
 from threadmem import RoleThread
 
-thread = RoleThread()
+# Create a thread storing it in a local sqlite db
+thread = RoleThread(owner_id="john@jacobs.ai")
+
+# Post messages
 thread.post("user", "Hello, Thread!")
+thread.post("assistant", "How can I help?")
+thread.post("user", "Whats this image?", images=["data:image/jpeg;base64,..."])
 
 # output in openai chat schema format
 print(thread.to_oai())
+
+# Find a thread
+threads = RoleThread.find(owner_id="john@jacobs.ai")
+
+# Delete a thread
+threads[0].delete()
 ```
+
+##### Supported Backends
+
+- Sqlite
+- Postgresql
 
 ## Develop
 
