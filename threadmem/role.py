@@ -415,7 +415,6 @@ class RoleThread(WithDB):
             for _, role in self._role_mapping.items():
                 role_mapping[role.name] = role.model_dump()
 
-        role_mapping = json.dumps(self._role_mapping) if self._role_mapping else None
         return RoleThreadRecord(
             id=self._id,
             owner_id=self._owner_id,
