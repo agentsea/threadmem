@@ -408,6 +408,7 @@ class RoleThread(WithDB):
             RoleThreadRecord: An instance of RoleThreadRecord with fields populated from the RoleThread instance.
         """
         metadata = json.dumps(self._metadata) if self._metadata else None
+        role_mapping = json.dumps(self._role_mapping) if self._role_mapping else None
         return RoleThreadRecord(
             id=self._id,
             owner_id=self._owner_id,
@@ -418,7 +419,8 @@ class RoleThread(WithDB):
             remote=self._remote,
             created=self._created,
             updated=self._updated,
-            role_mapping=self._role_mapping,
+            role_mapping=role_mapping,
+            version=self._version,
         )
 
     @classmethod
@@ -433,6 +435,9 @@ class RoleThread(WithDB):
             RoleThread: An instance of RoleThread with properties populated from the database record.
         """
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
+        role_mapping_dict = (
+            json.loads(record.role_mapping) if record.role_mapping else None
+        )
         obj = cls.__new__(cls)
         obj._id = record.id
         obj._owner_id = record.owner_id
@@ -442,7 +447,8 @@ class RoleThread(WithDB):
         obj._created = record.created
         obj._updated = record.updated
         obj._remote = record.remote
-        obj._role_mapping = record.role_mapping
+        obj._role_mapping = role_mapping_dict
+        obj._version = record.version
         obj._messages = [RoleMessage.from_record(msg) for msg in record.messages]
         return obj
 
@@ -635,6 +641,7 @@ class RoleThread(WithDB):
         ]
         obj._created = schema.created
         obj._updated = schema.updated
+        obj._version = schema.version
         return obj
 
     def to_schema(self) -> RoleThreadModel:
@@ -647,6 +654,7 @@ class RoleThread(WithDB):
             public=self._public,
             name=self._name,
             metadata=self._metadata,
+            version=self._version,
             messages=[message.to_schema() for message in self._messages],
             created=self._created,
             updated=self._updated,

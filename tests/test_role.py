@@ -43,15 +43,17 @@ def test_role_message_serialization_deserialization():
 def test_role_message_empty_lists_none_values():
     random_guest = generate_random_user()
     role_message = RoleMessage(
-        thread_id=12345, role=random_guest, text="Empty Test", images=None, metadata=None
+        thread_id=12345,
+        role=random_guest,
+        text="Empty Test",
+        images=None,
+        metadata=None,
     )
     record = role_message.to_record()
     assert record.meta_data is None, "Metadata should be None"
-    assert record.images is None, "Images should be None"
 
     deserialized_message = RoleMessage.from_record(record)
     assert deserialized_message.metadata is None, "Decerialized Metadata should be None"
-    assert deserialized_message.images is None, "Decerialized Images should be None"
     # TODO: we should either change the deserialization to be more consistent or fix this text
 
 

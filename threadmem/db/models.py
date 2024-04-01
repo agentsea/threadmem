@@ -32,6 +32,7 @@ class RoleThreadRecord(Base):
     role_mapping = Column(String, nullable=True)
     meta_data = Column(String, nullable=True)
     remote = Column(String, nullable=True)
+    version = Column(String, nullable=True)
     created = Column(Float, default=time.time)
     updated = Column(Float, default=time.time)
 

@@ -32,7 +32,8 @@ class RoleThreadModel(BaseModel):
     metadata: Optional[dict] = None
     id: str
     messages: List[RoleMessageModel]
-    role_mapping: Dict[str, RoleModel]
+    role_mapping: Dict[str, RoleModel] = {}
+    version: Optional[str] = None
     created: float
     updated: float
 
