@@ -410,6 +410,11 @@ class RoleThread(WithDB):
             RoleThreadRecord: An instance of RoleThreadRecord with fields populated from the RoleThread instance.
         """
         metadata = json.dumps(self._metadata) if self._metadata else None
+        role_mapping = {}
+        if self._role_mapping:
+            for _, role in self._role_mapping.items():
+                role_mapping[role.name] = role.model_dump()
+
         role_mapping = json.dumps(self._role_mapping) if self._role_mapping else None
         return RoleThreadRecord(
             id=self._id,
@@ -437,9 +442,13 @@ class RoleThread(WithDB):
             RoleThread: An instance of RoleThread with properties populated from the database record.
         """
         metadata_dict = json.loads(record.meta_data) if record.meta_data else None
-        role_mapping_dict = (
-            json.loads(record.role_mapping) if record.role_mapping else None
-        )
+
+        role_mapping_dict = {}
+        if record.role_mapping:
+            jdict = json.loads(record.role_mapping)
+            for role_name, role_dict in jdict.items():
+                role_mapping_dict[role_name] = RoleModel(**role_dict)
+
         obj = cls.__new__(cls)
         obj._id = record.id
         obj._owner_id = record.owner_id
