@@ -42,18 +42,18 @@ Role based threads are useful for managing openai-style chat schemas.
 from threadmem import RoleThread
 
 # Create a thread storing it in a local sqlite db
-thread = RoleThread(owner_id="john@jacobs.ai")
+thread = RoleThread(owner_id="dolores@agentsea.ai")
 
 # Post messages
 thread.post("user", "Hello, Thread!")
 thread.post("assistant", "How can I help?")
 thread.post("user", "Whats this image?", images=["data:image/jpeg;base64,..."])
 
-# output in openai chat schema format
+# Output in openai chat schema format
 print(thread.to_oai())
 
 # Find a thread
-threads = RoleThread.find(owner_id="john@jacobs.ai")
+threads = RoleThread.find(owner_id="dolores@agentsea.ai")
 
 # Delete a thread
 threads[0].delete()
