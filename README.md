@@ -24,8 +24,6 @@
 
 Threadmem enables robust chat experiences with AI agents. It offers a Python backend for managing thread state as well as a React chat interface.
 
-We support [Agentscript](https://github.com/agentsea/agentscript) for beautiful UI experiences.
-
 ## Backend
 
 ### Installation
@@ -38,24 +36,16 @@ pip install threadmem
 
 #### Role Threads
 
-Create a role based thread
+Create a role based thread and store in a local sqlite database
 
 ```python
-from threadmem import Thread
+from threadmem import RoleThread
 
-thread = Thread()
+thread = RoleThread()
 thread.post("user", "Hello, Thread!")
 
 # output in openai chat schema format
 print(thread.to_oai())
-```
-
-## Frontend
-
-### Installation
-
-```
-npm i @agentsea/threadmem
 ```
 
 ## Develop
