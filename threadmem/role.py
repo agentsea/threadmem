@@ -410,10 +410,11 @@ class RoleThread(WithDB):
             RoleThreadRecord: An instance of RoleThreadRecord with fields populated from the RoleThread instance.
         """
         metadata = json.dumps(self._metadata) if self._metadata else None
-        role_mapping = {}
+        role_mapping_dict = {}
         if self._role_mapping:
             for _, role in self._role_mapping.items():
-                role_mapping[role.name] = role.model_dump()
+                role_mapping_dict[role.name] = role.model_dump()
+        role_mapping = json.dumps(role_mapping_dict)
 
         return RoleThreadRecord(
             id=self._id,
