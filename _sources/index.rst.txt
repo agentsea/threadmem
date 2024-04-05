@@ -9,12 +9,11 @@ which can be either public or private, and allows for detailed tracking and vers
 
 .. toctree::
    :maxdepth: 2
-   :caption: Library Reference
 
-   api
+   API Reference <api>
 
 .. toctree::
    :maxdepth: 1
-   :caption: -------
+   :caption: ↪
 
-   Back to Agentsea Documentation <https://agentsea.github.io>
+   Go to User Guide <https://agentsea.github.io/threadmem.html>
