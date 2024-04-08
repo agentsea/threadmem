@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "threadmem"
-version = "0.2.11"
+version = "0.2.12"
 description = "Thread memory for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
-license = "Apache 2.0"
+license = "MIT"
 readme = "README.md"
 packages = [{include = "threadmem"}]
 
