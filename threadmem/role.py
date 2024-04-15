@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, TypeVar
+from typing import List, Optional, Dict, TypeVar, Any
 import uuid
 import time
 import json
@@ -109,6 +109,8 @@ class RoleMessage(WithDB):
             )
             return [cls.from_record(record) for record in records]
 
+        raise ValueError("no session")
+
     @classmethod
     def from_record(cls, record: RoleMessageRecord) -> "RoleMessage":
         """
@@ -124,17 +126,17 @@ class RoleMessage(WithDB):
         Returns:
             RoleMessage: The reconstructed RoleMessage object.
         """
-        metadata_dict = json.loads(record.meta_data) if record.meta_data else None
-        images_list = json.loads(record.images) if record.images else []
+        metadata_dict = json.loads(record.meta_data) if record.meta_data else None  # type: ignore
+        images_list = json.loads(record.images) if record.images else []  # type: ignore
         obj = cls.__new__(cls)
-        obj.id = record.id
-        obj.text = record.text
-        obj.private = record.private
-        obj.created = record.created
-        obj.role = record.role
+        obj.id = record.id  # type: ignore
+        obj.text = record.text  # type: ignore
+        obj.private = record.private  # type: ignore
+        obj.created = record.created  # type: ignore
+        obj.role = record.role  # type: ignore
         obj.metadata = metadata_dict
         obj.images = images_list
-        obj.thread_id = record.thread_id
+        obj.thread_id = record.thread_id  # type: ignore
         return obj
 
     def save(self) -> None:
@@ -441,11 +443,11 @@ class RoleThread(WithDB):
         Returns:
             RoleThread: An instance of RoleThread with properties populated from the database record.
         """
-        metadata_dict = json.loads(record.meta_data) if record.meta_data else None
+        metadata_dict = json.loads(str(record.meta_data)) if record.meta_data else None  # type: ignore
 
         role_mapping_dict = {}
-        if record.role_mapping:
-            jdict = json.loads(record.role_mapping)
+        if record.role_mapping:  # type: ignore
+            jdict = json.loads(str(record.role_mapping))
             for role_name, role_dict in jdict.items():
                 role_mapping_dict[role_name] = RoleModel(**role_dict)
 
@@ -461,6 +463,7 @@ class RoleThread(WithDB):
         obj._role_mapping = role_mapping_dict
         obj._version = record.version
         obj._messages = [RoleMessage.from_record(msg) for msg in record.messages]
+        obj._remote = None
         return obj
 
     def to_update_schema(self) -> UpdateRoleThreadModel:
@@ -499,7 +502,7 @@ class RoleThread(WithDB):
                 )
                 print("\nfound existing thread", existing_thread)
 
-                if existing_thread["version"] != self._version:
+                if existing_thread["version"] != self._version:  # type: ignore
                     print(
                         "WARNING: current task version is different from remote, you could be overriding changes"
                     )
@@ -573,13 +576,16 @@ class RoleThread(WithDB):
                 "/v1/rolethreads",
                 json_data={**kwargs, "sort": "created_desc"},
             )
+            if not remote_response:
+                raise ValueError(
+                    "expected response from remote request to lest threads"
+                )
             threads = RoleThreadsModel(**remote_response)
-            if remote_response is not None:
-                out = [cls.from_schema(record) for record in threads.threads]
-                for thread in out:
-                    thread._remote = remote
-                    print("\nreturning task: ", thread.__dict__)
-                return out
+            out = [cls.from_schema(record) for record in threads.threads]
+            for thread in out:
+                thread._remote = remote
+                print("\nreturning task: ", thread.__dict__)
+            return out
         else:
             for db in cls.get_db():
                 records = (
@@ -590,8 +596,10 @@ class RoleThread(WithDB):
                 )
                 return [cls.from_record(record) for record in records]
 
+            raise Exception("no session")
+
     @property
-    def owner_id(self) -> str:
+    def owner_id(self) -> Optional[str]:
         """Get the owner ID of the thread."""
         return self._owner_id
 
@@ -654,6 +662,7 @@ class RoleThread(WithDB):
         obj._created = schema.created
         obj._updated = schema.updated
         obj._version = schema.version
+        obj._remote = schema.remote
         return obj
 
     def to_schema(self) -> RoleThreadModel:
@@ -686,13 +695,13 @@ class RoleThread(WithDB):
 
     @classmethod
     def _remote_request(
-        self,
+        cls,
         addr: str,
         method: str,
         endpoint: str,
         json_data: Optional[dict] = None,
         auth_token: Optional[str] = None,
-    ) -> Optional[List[R]]:
+    ) -> Optional[Dict[str, Any]]:
         url = f"{addr}{endpoint}"
         headers = {}
         if not auth_token:

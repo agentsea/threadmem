@@ -52,12 +52,3 @@ class UserRecord(Base):
     picture = Column(String)
     created = Column(Integer)
     updated = Column(Integer)
-
-    def to_v1_schema(self) -> V1UserProfile:
-        return V1UserProfile(
-            email=self.email,
-            display_name=self.display_name,
-            picture=self.picture,
-            created=self.created,
-            updated=self.updated,
-        )

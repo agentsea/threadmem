@@ -131,7 +131,7 @@ async def update_role_thread(
     if data.name:
         thread.name = data.name
     if data.public:
-        thread.public = data.public
+        thread.public = data.public  # type: ignore
     if data.metadata:
         thread.metadata = data.metadata
     print("\nsaving task: ", thread.__dict__)

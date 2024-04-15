@@ -1,4 +1,5 @@
 import os
+import time
 
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker
@@ -23,9 +24,11 @@ def get_pg_conn() -> Engine:
     if not db_user:
         raise ValueError("$DB_HOST must be set to a running postgres server")
 
-    db_name = os.environ.get("DB_NAME")
+    db_name = os.environ.get("THREADS_DB_NAME")
     if not db_name:
-        raise ValueError("$DB_NAME must be set to a postgres db name")
+        db_name = os.environ.get("DB_NAME")
+        if not db_name:
+            raise ValueError("$DB_NAME must be set to a postgres db name")
 
     engine = create_engine(
         f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}/{db_name}",
@@ -36,8 +39,14 @@ def get_pg_conn() -> Engine:
 
 
 def get_sqlite_conn() -> Engine:
-    os.makedirs(os.path.dirname("./data/threads.db"), exist_ok=True)
-    engine = create_engine("sqlite:///./data/threads.db")
+    db_name = os.environ.get("THREADS_DB_NAME", "threads.db")
+    db_path = os.environ.get("THREADS_DB_PATH", "./data")
+    db_test = os.environ.get("THREADS_DB_TEST", "false") == "true"
+    if db_test:
+        db_name = f"threads_test_{int(time.time())}.db"
+    print(f"\nconnecting to local sqlite db ./data/{db_name}")
+    os.makedirs(os.path.dirname(f"{db_path}/{db_name}"), exist_ok=True)
+    engine = create_engine(f"sqlite:///{db_path}/{db_name}")
     return engine
 
 

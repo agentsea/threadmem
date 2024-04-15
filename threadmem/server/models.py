@@ -36,6 +36,7 @@ class RoleThreadModel(BaseModel):
     version: Optional[str] = None
     created: float
     updated: float
+    remote: Optional[str] = None
 
 
 class RoleThreadsModel(BaseModel):
