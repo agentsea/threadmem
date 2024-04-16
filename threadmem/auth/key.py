@@ -78,7 +78,9 @@ class HubKeyProvider(KeyProvider, WithDB):
             prof = V1UserProfile(**user_data)
             # print("returning profile: ", prof)
             out = User.from_v1_schema(prof)
-            print("returning user: ", out)
+            # print("returning user: ", out)
+            if not out:
+                raise ValueError("Failed to get user profile")
             return out
 
         except RequestException as e:

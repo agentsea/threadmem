@@ -27,8 +27,8 @@ class User(WithDB):
         self.email = email
         self.display_name = display_name
         self.picture = picture
-        self.created = time.time()
-        self.updated = time.time()
+        self.created = int(time.time())
+        self.updated = int(time.time())
 
         self.save()
 

@@ -260,7 +260,7 @@ class RoleThread(WithDB):
 
     def add_role(self, role: RoleModel) -> None:
         if self._remote:
-            print("\n!posting msg to remote task", self._id)
+            # print("\n!posting msg to remote task", self._id)
             try:
                 self._remote_request(
                     self._remote,
@@ -279,7 +279,7 @@ class RoleThread(WithDB):
 
     def remove_role(self, name: str) -> None:
         if self._remote:
-            print("\n!posting msg to remote task", self._id)
+            # print("\n!removing role from remote", self._id)
             try:
                 self._remote_request(
                     self._remote,
@@ -287,9 +287,9 @@ class RoleThread(WithDB):
                     f"/v1/rolethreads/{self._id}/roles",
                     {"name": name},
                 )
-                print("\nrefreshing thread...")
+                # print("\nrefreshing thread...")
                 self.refresh()
-                print("\nrefreshed thread")
+                # print("\nrefreshed thread")
                 return
             except Exception as e:
                 raise e
@@ -352,7 +352,7 @@ class RoleThread(WithDB):
             Exception: If an error occurs while posting the message to a remote server.
         """
         if self._remote:
-            print("\n!posting msg to remote task", self._id)
+            # print("\nposting msg to remote task", self._id)
             try:
                 self._remote_request(
                     self._remote,
@@ -360,9 +360,9 @@ class RoleThread(WithDB):
                     f"/v1/rolethreads/{self._id}/msgs",
                     {"msg": msg, "role": role, "images": images},
                 )
-                print("\nrefreshing thread...")
+                # print("\nrefreshing thread...")
                 self.refresh()
-                print("\nrefreshed thread")
+                # print("\nrefreshed thread")
                 return
             except Exception as e:
                 existing_thread = None
@@ -490,17 +490,17 @@ class RoleThread(WithDB):
         If the thread is remote, it sends a request to the remote server to update or create the thread.
         If the thread is local, it saves the thread to the database.
         """
-        print("\n!saving thread", self._id)
+        # print("\nsaving thread", self._id)
         # Generate the new version hash
         new_version = self.generate_version_hash()
 
         if self._remote:
-            print("\n!saving remote thread", self._id)
+            # print("\nsaving remote thread", self._id)
             try:
                 existing_thread = self._remote_request(
                     self._remote, "GET", f"/v1/rolethreads/{self._id}"
                 )
-                print("\nfound existing thread", existing_thread)
+                # print("\nfound existing thread", existing_thread)
 
                 if existing_thread["version"] != self._version:  # type: ignore
                     print(
@@ -510,7 +510,7 @@ class RoleThread(WithDB):
                 existing_thread = None
                 raise e
             if existing_thread:
-                print("\nupdating existing thread", existing_thread)
+                # print("\nupdating existing thread", existing_thread)
                 if self._version != new_version:
                     self._version = new_version
                     print(f"Version updated to {self._version}")
@@ -521,12 +521,12 @@ class RoleThread(WithDB):
                     f"/v1/rolethreads/{self._id}",
                     json_data=self.to_update_schema().model_dump(),
                 )
-                print("\nupdated existing thread", self._id)
+                # print("\nupdated existing thread", self._id)
             else:
-                print("\ncreating new thread", self._id)
+                # print("\ncreating new thread", self._id)
                 if self._version != new_version:
                     self._version = new_version
-                    print(f"Version updated to {self._version}")
+                    # print(f"Version updated to {self._version}")
 
                 self._remote_request(
                     self._remote,
@@ -534,12 +534,12 @@ class RoleThread(WithDB):
                     "/v1/rolethreads",
                     json_data=self.to_schema().model_dump(),
                 )
-                print("\ncreated new thread", self._id)
+                # print("\ncreated new thread", self._id)
         else:
-            print("\n!saving local db thread", self._id)
+            # print("\n!saving local db thread", self._id)
             if self._version != new_version:
                 self._version = new_version
-                print(f"Version updated to {self._version}")
+                # print(f"Version updated to {self._version}")
 
             for db in self.get_db():
                 db.merge(self.to_record())
@@ -569,7 +569,7 @@ class RoleThread(WithDB):
             List[RoleThread]: A list of RoleThread instances that match the filter criteria.
         """
         if remote:
-            print("finding remote tasks for: ", remote, kwargs)
+            # print("finding remote tasks for: ", remote, kwargs)
             remote_response = cls._remote_request(
                 remote,
                 "GET",
@@ -584,7 +584,7 @@ class RoleThread(WithDB):
             out = [cls.from_schema(record) for record in threads.threads]
             for thread in out:
                 thread._remote = remote
-                print("\nreturning task: ", thread.__dict__)
+                # print("\nreturning task: ", thread.__dict__)
             return out
         else:
             for db in cls.get_db():
@@ -708,26 +708,26 @@ class RoleThread(WithDB):
             auth_token = os.getenv(HUB_API_KEY_ENV)
             if not auth_token:
                 raise Exception(f"Hub API key not found, set ${HUB_API_KEY_ENV}")
-        print(f"\n!auth_token: {auth_token}")
+        # print(f"\n!auth_token: {auth_token}")
         headers["Authorization"] = f"Bearer {auth_token}"
         try:
             if method.upper() == "GET":
-                print("\ncalling remote thread GET with url: ", url)
-                print("\ncalling remote thread GET with headers: ", headers)
+                # print("\ncalling remote thread GET with url: ", url)
+                # print("\ncalling remote thread GET with headers: ", headers)
                 response = requests.get(url, headers=headers)
             elif method.upper() == "POST":
-                print("\ncalling remote thread POST with: ", url, json_data)
-                print("\ncalling remote thread POST with headers: ", headers)
-                print("\ncalling remote thread POST with data: ", json_data)
+                # print("\ncalling remote thread POST with: ", url, json_data)
+                # print("\ncalling remote thread POST with headers: ", headers)
+                # print("\ncalling remote thread POST with data: ", json_data)
                 response = requests.post(url, json=json_data, headers=headers)
             elif method.upper() == "PUT":
-                print("\ncalling remote thread PUT with: ", url, json_data)
-                print("\ncalling remote thread PUT with headers: ", headers)
-                print("\ncalling remote thread PUT with data: ", json_data)
+                # print("\ncalling remote thread PUT with: ", url, json_data)
+                # print("\ncalling remote thread PUT with headers: ", headers)
+                # print("\ncalling remote thread PUT with data: ", json_data)
                 response = requests.put(url, json=json_data, headers=headers)
             elif method.upper() == "DELETE":
-                print("\ncalling remote thread DELETE with: ", url)
-                print("\ncalling remote thread DELETE with headers: ", headers)
+                # print("\ncalling remote thread DELETE with: ", url)
+                # print("\ncalling remote thread DELETE with headers: ", headers)
                 response = requests.delete(url, headers=headers)
             else:
                 return None
@@ -743,7 +743,7 @@ class RoleThread(WithDB):
                     print("Raw Response:", response.text)
                 raise
             # print("\nresponse: ", response.__dict__)
-            print("\response.status_code: ", response.status_code)
+            # print("\response.status_code: ", response.status_code)
 
             try:
                 response_json = response.json()
@@ -760,9 +760,9 @@ class RoleThread(WithDB):
         """
         Refreshes the RoleThread instance from the remote server.
         """
-        print("\n!refreshing thread", self._id)
+        # print("\nrefreshing thread", self._id)
         if self._remote:
-            print("\n!refreshing remote thread", self._id)
+            # print("\nrefreshing remote thread", self._id)
             try:
 
                 remote_thread = self._remote_request(
@@ -771,7 +771,7 @@ class RoleThread(WithDB):
                     f"/v1/rolethreads/{self._id}",
                     auth_token=auth_token,
                 )
-                print("\nfound remote thread", remote_thread)
+                # print("\nfound remote thread", remote_thread)
                 if remote_thread:
                     schema = RoleThreadModel(**remote_thread)
                     self._public = schema.public
@@ -782,7 +782,7 @@ class RoleThread(WithDB):
                         for msg_schema in schema.messages
                     ]
                     self._updated = schema.updated
-                    print("\nrefreshed remote thread", self._id)
+                    # print("\nrefreshed remote thread", self._id)
             except requests.RequestException as e:
                 raise e
         else:
