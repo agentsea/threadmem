@@ -361,7 +361,7 @@
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.add_role">[docs]</a>
     <span class="k">def</span> <span class="nf">add_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">RoleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!posting msg to remote task&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\n!posting msg to remote task&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
@@ -383,7 +383,7 @@
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.remove_role">[docs]</a>
     <span class="k">def</span> <span class="nf">remove_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!posting msg to remote task&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\n!removing role from remote&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
@@ -391,9 +391,9 @@
                     <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">/roles&quot;</span><span class="p">,</span>
                     <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshing thread...&quot;</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nrefreshing thread...&quot;)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshed thread&quot;</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nrefreshed thread&quot;)</span>
                 <span class="k">return</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">e</span>
@@ -462,7 +462,7 @@
 <span class="sd">            Exception: If an error occurs while posting the message to a remote server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!posting msg to remote task&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\nposting msg to remote task&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
@@ -470,9 +470,9 @@
                     <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">/msgs&quot;</span><span class="p">,</span>
                     <span class="p">{</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">role</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">:</span> <span class="n">images</span><span class="p">},</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshing thread...&quot;</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nrefreshing thread...&quot;)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshed thread&quot;</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nrefreshed thread&quot;)</span>
                 <span class="k">return</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">existing_thread</span> <span class="o">=</span> <span class="kc">None</span>
@@ -615,17 +615,17 @@
 <span class="sd">        If the thread is remote, it sends a request to the remote server to update or create the thread.</span>
 <span class="sd">        If the thread is local, it saves the thread to the database.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!saving thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+        <span class="c1"># print(&quot;\nsaving thread&quot;, self._id)</span>
         <span class="c1"># Generate the new version hash</span>
         <span class="n">new_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_version_hash</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!saving remote thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\nsaving remote thread&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">existing_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">found existing thread&quot;</span><span class="p">,</span> <span class="n">existing_thread</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nfound existing thread&quot;, existing_thread)</span>
 
                 <span class="k">if</span> <span class="n">existing_thread</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                     <span class="nb">print</span><span class="p">(</span>
@@ -635,7 +635,7 @@
                 <span class="n">existing_thread</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">raise</span> <span class="n">e</span>
             <span class="k">if</span> <span class="n">existing_thread</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">updating existing thread&quot;</span><span class="p">,</span> <span class="n">existing_thread</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nupdating existing thread&quot;, existing_thread)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="n">new_version</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">new_version</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Version updated to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -646,12 +646,12 @@
                     <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">json_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_update_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">updated existing thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nupdated existing thread&quot;, self._id)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">creating new thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\ncreating new thread&quot;, self._id)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="n">new_version</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">new_version</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Version updated to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="c1"># print(f&quot;Version updated to {self._version}&quot;)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
@@ -659,12 +659,12 @@
                     <span class="s2">&quot;/v1/rolethreads&quot;</span><span class="p">,</span>
                     <span class="n">json_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">created new thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\ncreated new thread&quot;, self._id)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!saving local db thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\n!saving local db thread&quot;, self._id)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="n">new_version</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">new_version</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Version updated to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># print(f&quot;Version updated to {self._version}&quot;)</span>
 
             <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
                 <span class="n">db</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_record</span><span class="p">())</span>
@@ -697,7 +697,7 @@
 <span class="sd">            List[RoleThread]: A list of RoleThread instances that match the filter criteria.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">remote</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;finding remote tasks for: &quot;</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># print(&quot;finding remote tasks for: &quot;, remote, kwargs)</span>
             <span class="n">remote_response</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                 <span class="n">remote</span><span class="p">,</span>
                 <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
@@ -712,7 +712,7 @@
             <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">threads</span><span class="o">.</span><span class="n">threads</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
                 <span class="n">thread</span><span class="o">.</span><span class="n">_remote</span> <span class="o">=</span> <span class="n">remote</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">returning task: &quot;</span><span class="p">,</span> <span class="n">thread</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nreturning task: &quot;, thread.__dict__)</span>
             <span class="k">return</span> <span class="n">out</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_db</span><span class="p">():</span>
@@ -849,26 +849,26 @@
             <span class="n">auth_token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">HUB_API_KEY_ENV</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_token</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hub API key not found, set $</span><span class="si">{</span><span class="n">HUB_API_KEY_ENV</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!auth_token: </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;\n!auth_token: {auth_token}&quot;)</span>
         <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread GET with url: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread GET with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread GET with url: &quot;, url)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread GET with headers: &quot;, headers)</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread POST with: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread POST with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread POST with data: &quot;</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread POST with: &quot;, url, json_data)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread POST with headers: &quot;, headers)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread POST with data: &quot;, json_data)</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;PUT&quot;</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread PUT with: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread PUT with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread PUT with data: &quot;</span><span class="p">,</span> <span class="n">json_data</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread PUT with: &quot;, url, json_data)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread PUT with headers: &quot;, headers)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread PUT with data: &quot;, json_data)</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread DELETE with: &quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">calling remote thread DELETE with headers: &quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread DELETE with: &quot;, url)</span>
+                <span class="c1"># print(&quot;\ncalling remote thread DELETE with headers: &quot;, headers)</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
@@ -884,7 +884,7 @@
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Raw Response:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
                 <span class="k">raise</span>
             <span class="c1"># print(&quot;\nresponse: &quot;, response.__dict__)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">esponse.status_code: &quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\response.status_code: &quot;, response.status_code)</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">response_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -903,9 +903,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refreshes the RoleThread instance from the remote server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!refreshing thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+        <span class="c1"># print(&quot;\nrefreshing thread&quot;, self._id)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">!refreshing remote thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># print(&quot;\nrefreshing remote thread&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
 
                 <span class="n">remote_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
@@ -914,7 +914,7 @@
                     <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">auth_token</span><span class="o">=</span><span class="n">auth_token</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">found remote thread&quot;</span><span class="p">,</span> <span class="n">remote_thread</span><span class="p">)</span>
+                <span class="c1"># print(&quot;\nfound remote thread&quot;, remote_thread)</span>
                 <span class="k">if</span> <span class="n">remote_thread</span><span class="p">:</span>
                     <span class="n">schema</span> <span class="o">=</span> <span class="n">RoleThreadModel</span><span class="p">(</span><span class="o">**</span><span class="n">remote_thread</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">public</span>
@@ -925,7 +925,7 @@
                         <span class="k">for</span> <span class="n">msg_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">messages</span>
                     <span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_updated</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">updated</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">refreshed remote thread&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                    <span class="c1"># print(&quot;\nrefreshed remote thread&quot;, self._id)</span>
             <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">e</span>
         <span class="k">else</span><span class="p">:</span>
