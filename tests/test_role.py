@@ -12,28 +12,30 @@ def generate_random_user() -> str:
 
 def test_role_message_creation():
     random_user = generate_random_user()
-    role_message = RoleMessage(role=random_user, text="Hello, World!", thread_id=12345)
+    role_message = RoleMessage(
+        role=random_user, text="Hello, World!", thread_id="12345"
+    )
     role_message.save()
     db = next(role_message.get_db())
 
     stored_message = db.query(RoleMessageRecord).filter_by(id=role_message.id).first()
     assert stored_message is not None
-    assert stored_message.text == "Hello, World!"
-    assert stored_message.role == random_user
+    assert stored_message.text == "Hello, World!"  # type: ignore
+    assert stored_message.role == random_user  # type: ignore
 
 
 def test_role_message_serialization_deserialization():
     random_admin = generate_random_user()
     role_message = RoleMessage(
-        thread_id=12345,
+        thread_id="12345",
         role=random_admin,
         text="Test Message",
         images=["img1.png", "img2.png"],
         metadata={"key": "value"},
     )
     record = role_message.to_record()
-    assert record.meta_data == '{"key": "value"}'
-    assert record.images == '["img1.png", "img2.png"]'
+    assert record.meta_data == '{"key": "value"}'  # type: ignore
+    assert record.images == '["img1.png", "img2.png"]'  # type: ignore
 
     deserialized_message = RoleMessage.from_record(record)
     assert deserialized_message.metadata == {"key": "value"}
@@ -43,10 +45,9 @@ def test_role_message_serialization_deserialization():
 def test_role_message_empty_lists_none_values():
     random_guest = generate_random_user()
     role_message = RoleMessage(
-        thread_id=12345,
+        thread_id="12345",
         role=random_guest,
         text="Empty Test",
-        images=None,
         metadata=None,
     )
     record = role_message.to_record()
@@ -59,12 +60,14 @@ def test_role_message_empty_lists_none_values():
 
 def test_role_message_post_init_autosave():
     random_auto = generate_random_user()
-    role_message = RoleMessage(thread_id=12345, role=random_auto, text="Auto Save Test")
+    role_message = RoleMessage(
+        thread_id="12345", role=random_auto, text="Auto Save Test"
+    )
     db = next(role_message.get_db())
 
     stored_message = db.query(RoleMessageRecord).filter_by(id=role_message.id).first()
     assert stored_message is not None
-    assert stored_message.text == "Auto Save Test"
+    assert stored_message.text == "Auto Save Test"  # type: ignore
 
 
 def test_multiple_role_message_creation():
@@ -72,9 +75,9 @@ def test_multiple_role_message_creation():
     random_user2 = generate_random_user()
     random_admin = generate_random_user()
     messages = [
-        RoleMessage(thread_id=12345, role=random_user1, text="First Message"),
-        RoleMessage(thread_id=12345, role=random_user2, text="Second Message"),
-        RoleMessage(thread_id=12345, role=random_admin, text="Third Message"),
+        RoleMessage(thread_id="12345", role=random_user1, text="First Message"),
+        RoleMessage(thread_id="12345", role=random_user2, text="Second Message"),
+        RoleMessage(thread_id="12345", role=random_admin, text="Third Message"),
     ]
     for message in messages:
         message.save()
@@ -83,19 +86,19 @@ def test_multiple_role_message_creation():
     for message in messages:
         stored_message = db.query(RoleMessageRecord).filter_by(id=message.id).first()
         assert stored_message is not None
-        assert stored_message.text == message.text
-        assert stored_message.role == message.role
+        assert stored_message.text == message.text  # type: ignore
+        assert stored_message.role == message.role  # type: ignore
 
 
 def test_role_message_find_by_role():
     random_user1 = generate_random_user()
     random_admin = generate_random_user()
     role_message1 = RoleMessage(
-        thread_id=12345, role=random_user1, text="Find me by role"
+        thread_id="12345", role=random_user1, text="Find me by role"
     )
     role_message1.save()
     role_message2 = RoleMessage(
-        thread_id=12345, role=random_admin, text="You can't find me"
+        thread_id="12345", role=random_admin, text="You can't find me"
     )
     role_message2.save()
 
@@ -108,11 +111,11 @@ def test_role_message_find_by_text():
     random_user2 = generate_random_user()
     random_admin = generate_random_user()
     role_message1 = RoleMessage(
-        thread_id=12345, role=random_user2, text="Find this exact text"
+        thread_id="12345", role=random_user2, text="Find this exact text"
     )
     role_message1.save()
     role_message2 = RoleMessage(
-        thread_id=12345, role=random_admin, text="Find this exact text too"
+        thread_id="12345", role=random_admin, text="Find this exact text too"
     )
     role_message2.save()
 
@@ -124,7 +127,7 @@ def test_role_message_find_by_text():
 def test_role_message_find_by_id():
     random_user3 = generate_random_user()
     role_message1 = RoleMessage(
-        thread_id=12345, role=random_user3, text="Find me by ID"
+        thread_id="12345", role=random_user3, text="Find me by ID"
     )
     role_message1.save()
     search_id = role_message1.id

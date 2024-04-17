@@ -4,7 +4,6 @@ import requests
 from typing import Optional
 from requests.exceptions import RequestException
 
-from .user import User
 from threadmem.db.conn import WithDB
 from threadmem.server.models import V1UserProfile
 
@@ -21,7 +20,7 @@ class KeyProvider(ABC):
         pass
 
     @abstractmethod
-    def validate(self, token: str) -> User:
+    def validate(self, token: str) -> V1UserProfile:
         pass
 
 
@@ -31,7 +30,7 @@ class MockProvider(KeyProvider):
     _key = "k.mock"
 
     def create_key(self) -> str:
-        self._key
+        return self._key
 
     @abstractmethod
     def is_key(self, token: str) -> bool:
@@ -40,9 +39,9 @@ class MockProvider(KeyProvider):
         return False
 
     @abstractmethod
-    def validate(self, token: str) -> User:
+    def validate(self, token: str) -> V1UserProfile:
         if self._key == token:
-            return User(
+            return V1UserProfile(
                 email="tom@myspace.com",
                 display_name="tom",
                 picture="https://i.insider.com/4efd9b8b69bedd682c000022?width=750&format=jpeg&auto=webp",
@@ -67,7 +66,7 @@ class HubKeyProvider(KeyProvider, WithDB):
             return True
         return False
 
-    def validate(self, token: str) -> User:
+    def validate(self, token: str) -> V1UserProfile:
         headers = {"Authorization": f"Bearer {token}"}
         try:
             response = requests.get(f"{self.hub_url}/v1/users/me", headers=headers)
@@ -76,12 +75,7 @@ class HubKeyProvider(KeyProvider, WithDB):
             user_data = response.json()
             # print("key response user data: ", user_data)
             prof = V1UserProfile(**user_data)
-            # print("returning profile: ", prof)
-            out = User.from_v1_schema(prof)
-            # print("returning user: ", out)
-            if not out:
-                raise ValueError("Failed to get user profile")
-            return out
+            return prof
 
         except RequestException as e:
             raise ValueError(f"Failed to validate token. Error: {e}")

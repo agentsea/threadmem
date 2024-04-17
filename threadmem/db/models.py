@@ -35,18 +35,7 @@ class RoleThreadRecord(Base):
     updated = Column(Float, default=time.time)
 
     messages = relationship(
-        "RoleMessageRecord",
+        "RoleMessageRecord",  # type: ignore
         backref="role_thread",
         order_by="asc(RoleMessageRecord.created)",
     )
-
-
-class UserRecord(Base):
-    __tablename__ = "users"
-
-    email = Column(String, unique=True, index=True, primary_key=True)
-    display_name = Column(String)
-    handle = Column(String)
-    picture = Column(String)
-    created = Column(Integer)
-    updated = Column(Integer)

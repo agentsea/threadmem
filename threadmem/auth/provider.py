@@ -5,7 +5,6 @@ import time
 import requests
 
 from threadmem.server.models import V1UserProfile
-from threadmem.db.models import UserRecord
 from threadmem.db.conn import WithDB
 from .key import KeyProvider, default_key_provider, MockProvider
 
@@ -42,13 +41,8 @@ class HubAuthProvider(AuthProvider):
             if self._key_provider.is_key(token):
                 user = self._key_provider.validate(token)
                 print("found user: ", user)
-                if user:
-                    schema = user.to_v1_schema()
-                    return schema
-                else:
-                    raise Exception(
-                        "API token was unauthorized, please log in",
-                    )
+
+                return user
 
             else:
                 headers = {"Authorization": f"Bearer {token}"}
@@ -71,49 +65,6 @@ class HubAuthProvider(AuthProvider):
             logging.error(f"Problem fetching user auth {e}")
             raise Exception(
                 "ID token was unauthorized, please log in",
-            )
-
-
-class MockAuthProvider(AuthProvider, WithDB):
-    """A mock user auth"""
-
-    def key_provider(self) -> KeyProvider:
-        return MockProvider()
-
-    def get_user_auth(self, token: str) -> V1UserProfile:
-        for db in self.get_db():
-            try:
-                print("checking for user")
-                user = (
-                    db.query(UserRecord)
-                    .where(UserRecord.email == "tom@myspace.com")
-                    .first()
-                )
-                print("user: ", user)
-                if user is None:
-                    print("user not found in table, creating")
-                    user = UserRecord(
-                        email="tom@myspace.com",
-                        display_name="tom",
-                        handle="tom",
-                        picture="https://i.insider.com/4efd9b8b69bedd682c000022?width=750&format=jpeg&auto=webp",
-                        created=time.time(),
-                        updated=time.time(),
-                    )
-                    db.add(user)
-                    db.commit()
-            except Exception as e:
-                logging.error(e)
-                raise Exception(
-                    "Trouble getting user, if persists please contact support"
-                )
-            return V1UserProfile(
-                email=user.email,
-                display_name=user.display_name,
-                picture=user.picture,
-                created=user.created,
-                updated=user.updated,
-                token=token,
             )
 
 
