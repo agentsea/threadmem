@@ -321,13 +321,12 @@
         <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">role_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RoleModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RoleMessage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new instance of the RoleThread class.</span>
 
-<span class="sd">        This constructor initializes a role-based chat thread with various attributes including owner ID, visibility, </span>
-<span class="sd">        name, metadata, remote location, and version. It generates a unique ID for the thread, sets the creation and </span>
-<span class="sd">        update times to the current time, and if no version is provided, generates a version hash based on the thread&#39;s </span>
+<span class="sd">        This constructor initializes a role-based chat thread with various attributes including owner ID, visibility,</span>
+<span class="sd">        name, metadata, remote location, and version. It generates a unique ID for the thread, sets the creation and</span>
+<span class="sd">        update times to the current time, and if no version is provided, generates a version hash based on the thread&#39;s</span>
 <span class="sd">        schema. Finally, it saves the new thread instance to the database.</span>
 
 <span class="sd">        Args:</span>
@@ -338,6 +337,7 @@
 <span class="sd">            remote (Optional[str]): The remote location of the thread, if any. Defaults to None.</span>
 <span class="sd">            version (Optional[str]): The version of the thread. If not provided, a version hash is generated. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RoleMessage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_owner_id</span> <span class="o">=</span> <span class="n">owner_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">public</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
@@ -360,6 +360,18 @@
 <div class="viewcode-block" id="RoleThread.add_role">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.add_role">[docs]</a>
     <span class="k">def</span> <span class="nf">add_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">RoleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new role to the role mapping of the thread.</span>
+
+<span class="sd">        If the thread is associated with a remote location, the role is posted to the remote server. If the role already exists in the local role mapping, a ValueError is raised. Otherwise, the role is added to the local role mapping and the thread is saved.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            role (RoleModel): The role to be added.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If there is an issue posting the role to the remote server.</span>
+<span class="sd">            ValueError: If the role already exists in the role mapping.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
             <span class="c1"># print(&quot;\n!posting msg to remote task&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -382,6 +394,18 @@
 <div class="viewcode-block" id="RoleThread.remove_role">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.remove_role">[docs]</a>
     <span class="k">def</span> <span class="nf">remove_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a role from the role mapping of the thread.</span>
+
+<span class="sd">        If the thread is associated with a remote location, the role is removed from the remote server. If the role does not exist in the local role mapping, a ValueError is raised. Otherwise, the role is removed from the local role mapping and the thread is saved.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The name of the role to be removed.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If there is an issue removing the role from the remote server.</span>
+<span class="sd">            ValueError: If the role does not exist in the role mapping.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
             <span class="c1"># print(&quot;\n!removing role from remote&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -475,7 +499,8 @@
                 <span class="c1"># print(&quot;\nrefreshed thread&quot;)</span>
                 <span class="k">return</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">existing_thread</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># TODO: this is a local var which doesn&#39;t seem to do anything; needs to be fixed</span>
+                <span class="c1"># existing_thread = None</span>
                 <span class="k">raise</span> <span class="n">e</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
