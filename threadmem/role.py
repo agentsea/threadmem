@@ -222,13 +222,12 @@ class RoleThread(WithDB):
         version: Optional[str] = None,
         role_mapping: Dict[str, RoleModel] = {},
     ) -> None:
-        self._messages: List[RoleMessage] = []
         """
         Initializes a new instance of the RoleThread class.
 
-        This constructor initializes a role-based chat thread with various attributes including owner ID, visibility, 
-        name, metadata, remote location, and version. It generates a unique ID for the thread, sets the creation and 
-        update times to the current time, and if no version is provided, generates a version hash based on the thread's 
+        This constructor initializes a role-based chat thread with various attributes including owner ID, visibility,
+        name, metadata, remote location, and version. It generates a unique ID for the thread, sets the creation and
+        update times to the current time, and if no version is provided, generates a version hash based on the thread's
         schema. Finally, it saves the new thread instance to the database.
 
         Args:
@@ -239,6 +238,7 @@ class RoleThread(WithDB):
             remote (Optional[str]): The remote location of the thread, if any. Defaults to None.
             version (Optional[str]): The version of the thread. If not provided, a version hash is generated. Defaults to None.
         """
+        self._messages: List[RoleMessage] = []
         self._owner_id = owner_id
         self._public = public
         self._id = str(uuid.uuid4())
@@ -259,6 +259,18 @@ class RoleThread(WithDB):
         return self._role_mapping
 
     def add_role(self, role: RoleModel) -> None:
+        """
+        Adds a new role to the role mapping of the thread.
+
+        If the thread is associated with a remote location, the role is posted to the remote server. If the role already exists in the local role mapping, a ValueError is raised. Otherwise, the role is added to the local role mapping and the thread is saved.
+
+        Args:
+            role (RoleModel): The role to be added.
+
+        Raises:
+            Exception: If there is an issue posting the role to the remote server.
+            ValueError: If the role already exists in the role mapping.
+        """
         if self._remote:
             # print("\n!posting msg to remote task", self._id)
             try:
@@ -278,6 +290,18 @@ class RoleThread(WithDB):
         self.save()
 
     def remove_role(self, name: str) -> None:
+        """
+        Removes a role from the role mapping of the thread.
+
+        If the thread is associated with a remote location, the role is removed from the remote server. If the role does not exist in the local role mapping, a ValueError is raised. Otherwise, the role is removed from the local role mapping and the thread is saved.
+
+        Args:
+            name (str): The name of the role to be removed.
+
+        Raises:
+            Exception: If there is an issue removing the role from the remote server.
+            ValueError: If the role does not exist in the role mapping.
+        """
         if self._remote:
             # print("\n!removing role from remote", self._id)
             try:
@@ -365,7 +389,8 @@ class RoleThread(WithDB):
                 # print("\nrefreshed thread")
                 return
             except Exception as e:
-                existing_thread = None
+                # TODO: this is a local var which doesn't seem to do anything; needs to be fixed
+                # existing_thread = None
                 raise e
         else:
             self._messages.append(

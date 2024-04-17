@@ -232,7 +232,9 @@ def test_thread_serialization_deserialization():
     )
     thread.save()
     messages = [
-        RoleMessage(thread_id=thread.id, role=owner_id, text="Message 1", private=False),
+        RoleMessage(
+            thread_id=thread.id, role=owner_id, text="Message 1", private=False
+        ),
         RoleMessage(thread_id=thread.id, role=owner_id, text="Message 2", private=True),
     ]
     for message in messages:

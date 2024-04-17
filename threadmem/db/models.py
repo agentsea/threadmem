@@ -4,8 +4,6 @@ import time
 from sqlalchemy import Column, String, ForeignKey, Boolean, Float, Integer
 from sqlalchemy.orm import relationship, declarative_base
 
-from threadmem.server.models import V1UserProfile
-
 Base = declarative_base()
 
 
