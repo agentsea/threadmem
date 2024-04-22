@@ -44,7 +44,7 @@ def get_sqlite_conn() -> Engine:
     db_test = os.environ.get("THREADS_DB_TEST", "false") == "true"
     if db_test:
         db_name = f"threads_test_{int(time.time())}.db"
-    print(f"\nconnecting to local sqlite db ./data/{db_name}")
+    print(f"connecting to local sqlite db ./data/{db_name}")
     os.makedirs(os.path.dirname(f"{db_path}/{db_name}"), exist_ok=True)
     engine = create_engine(f"sqlite:///{db_path}/{db_name}")
     return engine
