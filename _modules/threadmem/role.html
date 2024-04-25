@@ -531,6 +531,45 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
 
+<div class="viewcode-block" id="RoleThread.add_msg">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.add_msg">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">RoleMessage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a message to the RoleThread.</span>
+
+<span class="sd">        This method allows for posting a message to the RoleThread, optionally including images,</span>
+<span class="sd">        marking the message as private, and attaching metadata. If the RoleThread is marked as remote,</span>
+<span class="sd">        the message is posted to a remote server. Otherwise, it is stored locally.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            role (str): The role associated with the message.</span>
+<span class="sd">            msg (RoleMessage): The role message</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If an error occurs while posting the message to a remote server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
+            <span class="c1"># print(&quot;\nposting msg to remote task&quot;, self._id)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
+                    <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">/msgs&quot;</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="c1"># print(&quot;\nrefreshing thread...&quot;)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+                <span class="c1"># print(&quot;\nrefreshed thread&quot;)</span>
+                <span class="k">return</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># TODO: this is a local var which doesn&#39;t seem to do anything; needs to be fixed</span>
+                <span class="c1"># existing_thread = None</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="RoleThread.post">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.post">[docs]</a>
     <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
