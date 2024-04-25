@@ -719,17 +719,6 @@ class RoleThread(WithDB):
         """Set the metadata of the thread."""
         self._metadata = value
 
-    def to_oai(self, include_private: bool = False) -> Dict[str, List[Dict[str, str]]]:
-        """Convert a RoleThread instance into a format compatible with OpenAI chat completions."""
-        formatted_messages = []
-
-        # TODO: support images
-        for message in self.messages(include_private=include_private):
-            formatted_message = {"role": message.role, "content": message.text}
-            formatted_messages.append(formatted_message)
-
-        return {"messages": formatted_messages}
-
     @classmethod
     def from_schema(cls, schema: RoleThreadModel) -> "RoleThread":
         """
