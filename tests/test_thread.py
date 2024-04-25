@@ -297,26 +297,21 @@ def test_role_thread_to_oai_conversion():
     thread.post(role="user", msg="Another public message", private=False)
 
     # Convert to OpenAI format including private messages
-    oai_format_with_private = thread.to_oai(include_private=True)
-    expected_with_private = {
-        "messages": [
-            {"role": "user", "content": "Public message from user"},
-            {"role": "system", "content": "Private system update"},
-            {"role": "user", "content": "Another public message"},
-        ]
-    }
+    oai_format_with_private = thread.to_openai()
+    expected_with_private = [
+        {
+            "role": "user",
+            "content": [{"type": "text", "text": "Public message from user"}],
+        },
+        {
+            "role": "system",
+            "content": [{"type": "text", "text": "Private system update"}],
+        },
+        {
+            "role": "user",
+            "content": [{"type": "text", "text": "Another public message"}],
+        },
+    ]
     assert (
         oai_format_with_private == expected_with_private
     ), "Conversion including private messages failed"
-
-    # Convert to OpenAI format excluding private messages
-    oai_format_without_private = thread.to_oai(include_private=False)
-    expected_without_private = {
-        "messages": [
-            {"role": "user", "content": "Public message from user"},
-            {"role": "user", "content": "Another public message"},
-        ]
-    }
-    assert (
-        oai_format_without_private == expected_without_private
-    ), "Conversion excluding private messages failed"
