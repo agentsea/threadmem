@@ -860,20 +860,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the metadata of the thread.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="RoleThread.to_oai">
-<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_oai">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_oai</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_private</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a RoleThread instance into a format compatible with OpenAI chat completions.&quot;&quot;&quot;</span>
-        <span class="n">formatted_messages</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="c1"># TODO: support images</span>
-        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">(</span><span class="n">include_private</span><span class="o">=</span><span class="n">include_private</span><span class="p">):</span>
-            <span class="n">formatted_message</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
-            <span class="n">formatted_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">formatted_message</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="n">formatted_messages</span><span class="p">}</span></div>
-
-
 <div class="viewcode-block" id="RoleThread.from_schema">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.from_schema">[docs]</a>
     <span class="nd">@classmethod</span>

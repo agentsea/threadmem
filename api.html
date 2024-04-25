@@ -95,7 +95,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.remove_role"><code class="docutils literal notranslate"><span class="pre">RoleThread.remove_role()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.role_mapping"><code class="docutils literal notranslate"><span class="pre">RoleThread.role_mapping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.save"><code class="docutils literal notranslate"><span class="pre">RoleThread.save()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_oai"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_oai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_openai"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_record"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_schema"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_schema()</span></code></a></li>
@@ -631,12 +630,6 @@ the message is posted to a remote server. Otherwise, it is stored locally.</p>
 <p>This method saves the RoleThread instance to the database.
 If the thread is remote, it sends a request to the remote server to update or create the thread.
 If the thread is local, it saves the thread to the database.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="threadmem.RoleThread.to_oai">
-<span class="sig-name descname"><span class="pre">to_oai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_private</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_oai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_oai" title="Link to this definition"></a></dt>
-<dd><p>Convert a RoleThread instance into a format compatible with OpenAI chat completions.</p>
 </dd></dl>
 
 <dl class="py method">
