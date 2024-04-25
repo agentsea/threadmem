@@ -411,6 +411,42 @@ class RoleThread(WithDB):
         """
         return self._id
 
+    def add_msg(self, msg: RoleMessage) -> None:
+        """
+        Add a message to the RoleThread.
+
+        This method allows for posting a message to the RoleThread, optionally including images,
+        marking the message as private, and attaching metadata. If the RoleThread is marked as remote,
+        the message is posted to a remote server. Otherwise, it is stored locally.
+
+        Args:
+            role (str): The role associated with the message.
+            msg (RoleMessage): The role message
+
+        Raises:
+            Exception: If an error occurs while posting the message to a remote server.
+        """
+        if self._remote:
+            # print("\nposting msg to remote task", self._id)
+            try:
+                self._remote_request(
+                    self._remote,
+                    "POST",
+                    f"/v1/rolethreads/{self._id}/msgs",
+                    msg.to_schema().model_dump(),
+                )
+                # print("\nrefreshing thread...")
+                self.refresh()
+                # print("\nrefreshed thread")
+                return
+            except Exception as e:
+                # TODO: this is a local var which doesn't seem to do anything; needs to be fixed
+                # existing_thread = None
+                raise e
+        else:
+            self._messages.append(msg)
+            self.save()
+
     def post(
         self,
         role: str,
