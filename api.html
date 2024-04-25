@@ -48,6 +48,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#threadmem.RoleMessage"><code class="docutils literal notranslate"><span class="pre">RoleMessage</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.created"><code class="docutils literal notranslate"><span class="pre">RoleMessage.created</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.find"><code class="docutils literal notranslate"><span class="pre">RoleMessage.find()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_openai"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_record"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_schema"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.id"><code class="docutils literal notranslate"><span class="pre">RoleMessage.id</span></code></a></li>
@@ -58,6 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.save"><code class="docutils literal notranslate"><span class="pre">RoleMessage.save()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.text"><code class="docutils literal notranslate"><span class="pre">RoleMessage.text</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.thread_id"><code class="docutils literal notranslate"><span class="pre">RoleMessage.thread_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_openai"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_record"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_schema"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_schema()</span></code></a></li>
 </ul>
@@ -77,6 +79,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.add_role"><code class="docutils literal notranslate"><span class="pre">RoleThread.add_role()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.delete"><code class="docutils literal notranslate"><span class="pre">RoleThread.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.find"><code class="docutils literal notranslate"><span class="pre">RoleThread.find()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.from_openai"><code class="docutils literal notranslate"><span class="pre">RoleThread.from_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.from_record"><code class="docutils literal notranslate"><span class="pre">RoleThread.from_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.from_schema"><code class="docutils literal notranslate"><span class="pre">RoleThread.from_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.generate_version_hash"><code class="docutils literal notranslate"><span class="pre">RoleThread.generate_version_hash()</span></code></a></li>
@@ -93,6 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.role_mapping"><code class="docutils literal notranslate"><span class="pre">RoleThread.role_mapping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.save"><code class="docutils literal notranslate"><span class="pre">RoleThread.save()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_oai"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_oai()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_openai"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_record"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_schema"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_update_schema"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_update_schema()</span></code></a></li>
@@ -163,17 +167,20 @@
 <p>A role-based chat message that supports text, optional images, and metadata.
 It can be marked as private and is associated with a specific thread and role.
 Each message is uniquely identified by an ID and records the creation time.</p>
-<p>Fields:</p>
-<ul class="simple">
-<li><p><strong>role (str):</strong> The role associated with the message.</p></li>
-<li><p><strong>text (str):</strong> The text content of the message.</p></li>
-<li><p><strong>thread_id (str):</strong> The ID of the thread this message belongs to.</p></li>
-<li><p><strong>images (List[str]):</strong> A list of image URLs associated with the message. Defaults to an empty list.</p></li>
-<li><p><strong>private (Optional[bool]):</strong> A flag indicating if the message is private. Defaults to False.</p></li>
-<li><p><strong>created (float):</strong> The timestamp of when the message was created. Defaults to the current time.</p></li>
-<li><p><strong>id (str):</strong> A unique identifier for the message. Defaults to a UUID4 string.</p></li>
-<li><p><strong>metadata (Optional[dict]):</strong> Additional metadata associated with the message. Defaults to None.</p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role</strong> (<em>str</em>) – The role associated with the message.</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – The text content of the message.</p></li>
+<li><p><strong>thread_id</strong> (<em>str</em>) – The ID of the thread this message belongs to.</p></li>
+<li><p><strong>images</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of image URLs associated with the message. Defaults to an empty list.</p></li>
+<li><p><strong>private</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – A flag indicating if the message is private. Defaults to False.</p></li>
+<li><p><strong>created</strong> (<em>float</em>) – The timestamp of when the message was created. Defaults to the current time.</p></li>
+<li><p><strong>id</strong> (<em>str</em>) – A unique identifier for the message. Defaults to a UUID4 string.</p></li>
+<li><p><strong>metadata</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em>) – Additional metadata associated with the message. Defaults to None.</p></li>
 </ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.created">
 <span class="sig-name descname"><span class="pre">created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#threadmem.RoleMessage.created" title="Link to this definition"></a></dt>
@@ -203,6 +210,12 @@ These arguments should correspond to the attributes of the RoleMessageRecord mod
 <dd class="field-even"><p>List[<a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.RoleMessage">RoleMessage</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleMessage.from_openai">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_openai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.role.RoleMessage"><span class="pre">RoleMessage</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.from_openai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.from_openai" title="Link to this definition"></a></dt>
+<dd><p>Creates a RoleMessage from an OpenAI response.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -293,6 +306,12 @@ After merging, it commits the changes to the database to ensure the RoleMessage 
 <dt class="sig sig-object py" id="threadmem.RoleMessage.thread_id">
 <span class="sig-name descname"><span class="pre">thread_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#threadmem.RoleMessage.thread_id" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleMessage.to_openai">
+<span class="sig-name descname"><span class="pre">to_openai</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_openai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_openai" title="Link to this definition"></a></dt>
+<dd><p>Converts a RoleMessage to the format expected by OpenAI.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.to_record">
@@ -442,6 +461,11 @@ If no remote server is specified, it retrieves the threads from the local databa
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleThread.from_openai">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_openai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msgs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.role.RoleThread"><span class="pre">RoleThread</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.from_openai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.from_openai" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.from_record">
@@ -614,6 +638,11 @@ If the thread is local, it saves the thread to the database.</p>
 <span class="sig-name descname"><span class="pre">to_oai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_private</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_oai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_oai" title="Link to this definition"></a></dt>
 <dd><p>Convert a RoleThread instance into a format compatible with OpenAI chat completions.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleThread.to_openai">
+<span class="sig-name descname"><span class="pre">to_openai</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_openai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_openai" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_record">
