@@ -1,7 +1,7 @@
 import uuid
 import time
 
-from sqlalchemy import Column, String, ForeignKey, Boolean, Float, Integer
+from sqlalchemy import Column, String, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
@@ -17,7 +17,7 @@ class RoleMessageRecord(Base):
     private = Column(Boolean, nullable=False)
     created = Column(Float, default=time.time)
     meta_data = Column(String, nullable=True)
-    thread_id = Column(String, ForeignKey("role_threads.id"))
+    thread_id = Column(String, ForeignKey("role_threads.id"), nullable=True)
 
 
 class RoleThreadRecord(Base):
@@ -35,7 +35,7 @@ class RoleThreadRecord(Base):
     updated = Column(Float, default=time.time)
 
     messages = relationship(
-        "RoleMessageRecord",  # type: ignore
-        backref="role_thread",
+        "RoleMessageRecord",
+        primaryjoin="RoleThreadRecord.id==RoleMessageRecord.thread_id",
         order_by="asc(RoleMessageRecord.created)",
     )

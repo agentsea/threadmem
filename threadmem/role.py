@@ -45,7 +45,7 @@ class RoleMessage(WithDB):
 
     role: str
     text: str
-    thread_id: str
+    thread_id: Optional[str] = None
     images: List[str] = field(default_factory=list)
     private: Optional[bool] = False
     created: float = field(default_factory=time.time)
@@ -56,7 +56,7 @@ class RoleMessage(WithDB):
         self.save()
 
     @classmethod
-    def from_openai(cls, msg: dict, thread_id: str) -> "RoleMessage":
+    def from_openai(cls, msg: dict) -> "RoleMessage":
         """Creates a RoleMessage from an OpenAI response."""
         role = msg["role"]
         content = msg["content"]
@@ -73,7 +73,7 @@ class RoleMessage(WithDB):
         else:
             text = content
 
-        return RoleMessage(role=role, text=text, thread_id=thread_id, images=images)
+        return RoleMessage(role=role, text=text, images=images)
 
     def to_openai(self) -> dict:
         """Converts a RoleMessage to the format expected by OpenAI."""
