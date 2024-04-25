@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from token import OP
 from typing import List, Optional, Dict, TypeVar, Any
 import uuid
 import time
@@ -31,23 +32,15 @@ class RoleMessage(WithDB):
     It can be marked as private and is associated with a specific thread and role.
     Each message is uniquely identified by an ID and records the creation time.
 
-    Fields:
-
-    - **role (str):** The role associated with the message.
-
-    - **text (str):** The text content of the message.
-
-    - **thread_id (str):** The ID of the thread this message belongs to.
-
-    - **images (List[str]):** A list of image URLs associated with the message. Defaults to an empty list.
-
-    - **private (Optional[bool]):** A flag indicating if the message is private. Defaults to False.
-
-    - **created (float):** The timestamp of when the message was created. Defaults to the current time.
-
-    - **id (str):** A unique identifier for the message. Defaults to a UUID4 string.
-
-    - **metadata (Optional[dict]):** Additional metadata associated with the message. Defaults to None.
+    Args:
+        role (str): The role associated with the message.
+        text (str): The text content of the message.
+        thread_id (str): The ID of the thread this message belongs to.
+        images (List[str]): A list of image URLs associated with the message. Defaults to an empty list.
+        private (Optional[bool]): A flag indicating if the message is private. Defaults to False.
+        created (float): The timestamp of when the message was created. Defaults to the current time.
+        id (str): A unique identifier for the message. Defaults to a UUID4 string.
+        metadata (Optional[dict]): Additional metadata associated with the message. Defaults to None.
     """
 
     role: str
@@ -61,6 +54,41 @@ class RoleMessage(WithDB):
 
     def __post_init__(self) -> None:
         self.save()
+
+    @classmethod
+    def from_openai(cls, msg: dict, thread_id: str) -> "RoleMessage":
+        """Creates a RoleMessage from an OpenAI response."""
+        role = msg["role"]
+        content = msg["content"]
+
+        images = []
+        text = ""
+
+        if isinstance(content, list):
+            for c in content:
+                if c["type"] == "text":
+                    text = c["text"]
+                elif c["type"] == "image_url":
+                    images.append(c["url"])
+        else:
+            text = content
+
+        return RoleMessage(role=role, text=text, thread_id=thread_id, images=images)
+
+    def to_openai(self) -> dict:
+        """Converts a RoleMessage to the format expected by OpenAI."""
+        content = []
+
+        # Add text content if it exists
+        if self.text:
+            content.append({"type": "text", "text": self.text})
+
+        # Add images if they exist
+        for image_url in self.images:
+            content.append({"type": "image_url", "url": image_url})
+
+        # Assemble the final JSON structure
+        return {"role": self.role, "content": content}
 
     def to_record(self) -> RoleMessageRecord:
         """
@@ -253,6 +281,39 @@ class RoleThread(WithDB):
             self._version = self.generate_version_hash()
 
         self.save()
+
+    @classmethod
+    def from_openai(cls, msgs: List[dict]) -> "RoleThread":
+        thread = RoleThread()
+        for msg in msgs:
+            role = msg["role"]
+            content = msg["content"]
+
+            images = []
+            text = ""
+
+            if isinstance(content, list):
+                for c in content:
+                    if c["type"] == "text":
+                        text = c["text"]
+                    elif c["type"] == "image_url":
+                        images.append(c["url"])
+            else:
+                text = content
+
+            # TODO: ineffiecient
+            thread.post(role, text, images)
+
+        return thread
+
+    def to_openai(self) -> List[dict]:
+        out = []
+
+        for msg in self._messages:
+            dct = msg.to_openai()
+            out.append(dct)
+
+        return out
 
     @property
     def role_mapping(self) -> Dict[str, RoleModel]:
