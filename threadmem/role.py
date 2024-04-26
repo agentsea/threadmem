@@ -6,6 +6,7 @@ import time
 import json
 import os
 import hashlib
+import copy
 
 import requests
 from sqlalchemy import asc
@@ -866,6 +867,23 @@ class RoleThread(WithDB):
 
         except requests.RequestException as e:
             raise e
+
+    def copy(self) -> "RoleThread":
+        """
+        Creates a copy of the current RoleThread instance with a new unique ID but with identical other attributes.
+
+        Returns:
+            RoleThread: A new RoleThread instance that is a copy of the current instance with a new unique ID.
+        """
+        # Use the __dict__ to create a deep copy of all properties
+        copied_thread = copy.deepcopy(self)
+
+        # Assign a new unique ID to the copied thread and reset certain properties if necessary
+        copied_thread._id = str(uuid.uuid4())
+        copied_thread._created = time.time()
+        copied_thread._updated = time.time()
+
+        return copied_thread
 
     def refresh(self, auth_token: Optional[str] = None) -> None:
         """
