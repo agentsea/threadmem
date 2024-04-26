@@ -78,6 +78,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#threadmem.RoleThread"><code class="docutils literal notranslate"><span class="pre">RoleThread</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.add_msg"><code class="docutils literal notranslate"><span class="pre">RoleThread.add_msg()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.add_role"><code class="docutils literal notranslate"><span class="pre">RoleThread.add_role()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.copy"><code class="docutils literal notranslate"><span class="pre">RoleThread.copy()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.delete"><code class="docutils literal notranslate"><span class="pre">RoleThread.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.find"><code class="docutils literal notranslate"><span class="pre">RoleThread.find()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.from_openai"><code class="docutils literal notranslate"><span class="pre">RoleThread.from_openai()</span></code></a></li>
@@ -439,6 +440,20 @@ the message is posted to a remote server. Otherwise, it is stored locally.</p>
 <li><p><strong>Exception</strong> – If there is an issue posting the role to the remote server.</p></li>
 <li><p><strong>ValueError</strong> – If the role already exists in the role mapping.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleThread.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.role.RoleThread"><span class="pre">RoleThread</span></a></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.copy" title="Link to this definition"></a></dt>
+<dd><p>Creates a copy of the current RoleThread instance with a new unique ID but with identical other attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new RoleThread instance that is a copy of the current instance with a new unique ID.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#threadmem.RoleThread" title="threadmem.RoleThread">RoleThread</a></p>
 </dd>
 </dl>
 </dd></dl>
