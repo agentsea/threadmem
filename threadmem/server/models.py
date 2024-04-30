@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict
 
 
-class RoleMessageModel(BaseModel):
+class V1RoleMessage(BaseModel):
     id: str
     role: str
     text: str
@@ -13,11 +13,11 @@ class RoleMessageModel(BaseModel):
     thread_id: Optional[str] = None
 
 
-class DeleteRoleModel(BaseModel):
+class V1DeleteRole(BaseModel):
     name: str
 
 
-class RoleModel(BaseModel):
+class V1Role(BaseModel):
     name: str
     user_id: str
     user_name: str
@@ -25,31 +25,31 @@ class RoleModel(BaseModel):
     description: Optional[str] = None
 
 
-class RoleThreadModel(BaseModel):
+class V1RoleThread(BaseModel):
     owner_id: Optional[str] = None
     public: bool
     name: Optional[str] = None
     metadata: Optional[dict] = None
     id: str
-    messages: List[RoleMessageModel]
-    role_mapping: Dict[str, RoleModel] = {}
+    messages: List[V1RoleMessage]
+    role_mapping: Dict[str, V1Role] = {}
     version: Optional[str] = None
     created: float
     updated: float
     remote: Optional[str] = None
 
 
-class RoleThreadsModel(BaseModel):
-    threads: List[RoleThreadModel]
+class V1RoleThreads(BaseModel):
+    threads: List[V1RoleThread]
 
 
-class UpdateRoleThreadModel(BaseModel):
+class V1UpdateRoleThread(BaseModel):
     public: bool
     name: Optional[str] = None
     metadata: Optional[dict] = None
 
 
-class CreateRoleThreadModel(BaseModel):
+class V1CreateRoleThread(BaseModel):
     public: bool = False
     name: Optional[str] = None
     metadata: Optional[dict] = None

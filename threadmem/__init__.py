@@ -1,11 +1,11 @@
-from .role import RoleMessage, RoleThread, RoleModel, RoleThreadsModel, RoleThreadModel
+from .role import RoleMessage, RoleThread, V1Role, V1RoleThread, V1RoleThreads
 
 __all__ = [
     "RoleMessage",
     "RoleThread",
-    "RoleModel",
-    "RoleThreadsModel",
-    "RoleThreadModel",
+    "V1Role",
+    "V1RoleThread",
+    "V1RoleThreads",
 ]
 
 

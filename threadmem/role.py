@@ -14,11 +14,11 @@ from sqlalchemy import asc
 from threadmem.db.models import RoleMessageRecord, RoleThreadRecord
 from threadmem.db.conn import WithDB
 from .server.models import (
-    RoleMessageModel,
-    RoleThreadModel,
-    UpdateRoleThreadModel,
-    RoleThreadsModel,
-    RoleModel,
+    V1RoleMessage,
+    V1RoleThread,
+    V1UpdateRoleThread,
+    V1RoleThreads,
+    V1Role,
 )
 from .env import HUB_API_KEY_ENV
 
@@ -185,7 +185,7 @@ class RoleMessage(WithDB):
             db.commit()
 
     @classmethod
-    def from_schema(cls, schema: RoleMessageModel) -> "RoleMessage":
+    def from_v1(cls, schema: V1RoleMessage) -> "RoleMessage":
         """
         Converts a RoleMessageModel instance into a RoleMessage instance.
 
@@ -194,7 +194,7 @@ class RoleMessage(WithDB):
         and converts it into a RoleMessage object by directly mapping the schema fields to the RoleMessage object fields.
 
         Args:
-            schema (RoleMessageModel): The schema to convert.
+            schema (V1RoleMessage): The schema to convert.
 
         Returns:
             RoleMessage: The newly created RoleMessage object.
@@ -210,7 +210,7 @@ class RoleMessage(WithDB):
         obj.thread_id = schema.thread_id
         return obj
 
-    def to_schema(self) -> RoleMessageModel:
+    def to_v1(self) -> V1RoleMessage:
         """
         Converts the current RoleMessage instance into a RoleMessageModel.
 
@@ -221,7 +221,7 @@ class RoleMessage(WithDB):
         Returns:
             RoleMessageModel: The RoleMessageModel object created from the RoleMessage instance.
         """
-        return RoleMessageModel(
+        return V1RoleMessage(
             id=self.id,
             role=self.role,
             text=self.text,
@@ -249,7 +249,7 @@ class RoleThread(WithDB):
         metadata: Optional[dict] = None,
         remote: Optional[str] = None,
         version: Optional[str] = None,
-        role_mapping: Dict[str, RoleModel] = {},
+        role_mapping: Dict[str, V1Role] = {},
     ) -> None:
         """
         Initializes a new instance of the RoleThread class.
@@ -317,10 +317,10 @@ class RoleThread(WithDB):
         return out
 
     @property
-    def role_mapping(self) -> Dict[str, RoleModel]:
+    def role_mapping(self) -> Dict[str, V1Role]:
         return self._role_mapping
 
-    def add_role(self, role: RoleModel) -> None:
+    def add_role(self, role: V1Role) -> None:
         """
         Adds a new role to the role mapping of the thread.
 
@@ -396,7 +396,7 @@ class RoleThread(WithDB):
         Returns:
             str: A hexadecimal string representing the SHA-256 hash of the serialized RoleThread instance.
         """
-        task_data = json.dumps(self.to_schema().model_dump(), sort_keys=True)
+        task_data = json.dumps(self.to_v1().model_dump(), sort_keys=True)
         hash_version = hashlib.sha256(task_data.encode("utf-8")).hexdigest()
         return hash_version
 
@@ -434,7 +434,7 @@ class RoleThread(WithDB):
                     self._remote,
                     "POST",
                     f"/v1/rolethreads/{self._id}/msgs",
-                    msg.to_schema().model_dump(),
+                    msg.to_v1().model_dump(),
                 )
                 # print("\nrefreshing thread...")
                 self.refresh()
@@ -572,7 +572,7 @@ class RoleThread(WithDB):
         if record.role_mapping:  # type: ignore
             jdict = json.loads(str(record.role_mapping))
             for role_name, role_dict in jdict.items():
-                role_mapping_dict[role_name] = RoleModel(**role_dict)
+                role_mapping_dict[role_name] = V1Role(**role_dict)
 
         obj = cls.__new__(cls)
         obj._id = record.id
@@ -589,7 +589,7 @@ class RoleThread(WithDB):
         obj._remote = None
         return obj
 
-    def to_update_schema(self) -> UpdateRoleThreadModel:
+    def to_update_schema(self) -> V1UpdateRoleThread:
         """
         Generates an UpdateRoleThreadModel instance with current thread properties.
 
@@ -599,7 +599,7 @@ class RoleThread(WithDB):
         Returns:
             UpdateRoleThreadModel: An instance populated with the current thread's name, visibility, and metadata.
         """
-        return UpdateRoleThreadModel(
+        return V1UpdateRoleThread(
             name=self._name,
             public=self._public,
             metadata=self._metadata,
@@ -655,7 +655,7 @@ class RoleThread(WithDB):
                     self._remote,
                     "POST",
                     "/v1/rolethreads",
-                    json_data=self.to_schema().model_dump(),
+                    json_data=self.to_v1().model_dump(),
                 )
                 # print("\ncreated new thread", self._id)
         else:
@@ -703,8 +703,8 @@ class RoleThread(WithDB):
                 raise ValueError(
                     "expected response from remote request to lest threads"
                 )
-            threads = RoleThreadsModel(**remote_response)
-            out = [cls.from_schema(record) for record in threads.threads]
+            threads = V1RoleThreads(**remote_response)
+            out = [cls.from_v1(record) for record in threads.threads]
             for thread in out:
                 thread._remote = remote
                 # print("\nreturning task: ", thread.__dict__)
@@ -757,7 +757,7 @@ class RoleThread(WithDB):
         self._metadata = value
 
     @classmethod
-    def from_schema(cls, schema: RoleThreadModel) -> "RoleThread":
+    def from_v1(cls, schema: V1RoleThread) -> "RoleThread":
         """
         Creates an instance of RoleThread from a RoleThreadModel.
         """
@@ -768,7 +768,7 @@ class RoleThread(WithDB):
         obj._name = schema.name
         obj._metadata = schema.metadata
         obj._messages = [
-            RoleMessage.from_schema(msg_schema) for msg_schema in schema.messages
+            RoleMessage.from_v1(msg_schema) for msg_schema in schema.messages
         ]
         obj._role_mapping = schema.role_mapping
         obj._created = schema.created
@@ -777,18 +777,18 @@ class RoleThread(WithDB):
         obj._remote = schema.remote
         return obj
 
-    def to_schema(self) -> RoleThreadModel:
+    def to_v1(self) -> V1RoleThread:
         """
         Converts the RoleThread instance into a RoleThreadModel for API representation.
         """
-        return RoleThreadModel(
+        return V1RoleThread(
             id=self._id,
             owner_id=self._owner_id,
             public=self._public,
             name=self._name,
             metadata=self._metadata,
             version=self._version,
-            messages=[message.to_schema() for message in self._messages],
+            messages=[message.to_v1() for message in self._messages],
             created=self._created,
             updated=self._updated,
             role_mapping=self._role_mapping,
@@ -902,12 +902,12 @@ class RoleThread(WithDB):
                 )
                 # print("\nfound remote thread", remote_thread)
                 if remote_thread:
-                    schema = RoleThreadModel(**remote_thread)
+                    schema = V1RoleThread(**remote_thread)
                     self._public = schema.public
                     self._name = schema.name
                     self._metadata = schema.metadata
                     self._messages = [
-                        RoleMessage.from_schema(msg_schema)
+                        RoleMessage.from_v1(msg_schema)
                         for msg_schema in schema.messages
                     ]
                     self._updated = schema.updated
@@ -916,3 +916,14 @@ class RoleThread(WithDB):
                 raise e
         else:
             raise ValueError("Refresh is only supported for remote threads")
+
+    def remove_images(self) -> None:
+        """Remove all images associated with this role thread."""
+        for message in self.messages():
+            if not message:
+                continue
+
+            if message.role == "user":
+                if message.images:
+                    message.images = []
+        return

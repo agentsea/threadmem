@@ -137,9 +137,9 @@ def test_two_users_communication():
 def test_thread_initialization_with_preexisting_messages():
     user_id = generate_random_user()
     preexisting_messages = [
-        RoleMessage(thread_id=12345, role=user_id, text="Pre-existing message 1"),
-        RoleMessage(thread_id=12345, role=user_id, text="Pre-existing message 2"),
-        RoleMessage(thread_id=12345, role=user_id, text="Pre-existing message 3"),
+        RoleMessage(thread_id="12345", role=user_id, text="Pre-existing message 1"),
+        RoleMessage(thread_id="12345", role=user_id, text="Pre-existing message 2"),
+        RoleMessage(thread_id="12345", role=user_id, text="Pre-existing message 3"),
     ]
 
     thread = RoleThread(
@@ -147,7 +147,9 @@ def test_thread_initialization_with_preexisting_messages():
     )
 
     for message in preexisting_messages:
-        thread.post(role=message.role, msg=message.text, private=message.private)
+        thread.post(
+            role=message.role, msg=message.text, private=message.private or False
+        )
 
     thread.save()
     id = thread.id
@@ -238,13 +240,15 @@ def test_thread_serialization_deserialization():
         RoleMessage(thread_id=thread.id, role=owner_id, text="Message 2", private=True),
     ]
     for message in messages:
-        thread.post(role=message.role, msg=message.text, private=message.private)
+        thread.post(
+            role=message.role, msg=message.text, private=message.private or False
+        )
 
     # Serialize the thread
     serialized_thread = thread.to_record()
-    assert serialized_thread.owner_id == owner_id
+    assert serialized_thread.owner_id == owner_id  # type: ignore
     assert serialized_thread.public is True
-    assert serialized_thread.name == "Serialization Test Thread"
+    assert serialized_thread.name == "Serialization Test Thread"  # type: ignore
     assert len(serialized_thread.messages) == 2
 
     # Deserialize the thread

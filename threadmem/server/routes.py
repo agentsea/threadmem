@@ -4,24 +4,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from threadmem import RoleThread
 
 from .models import (
-    RoleThreadModel,
-    CreateRoleThreadModel,
+    V1RoleThread,
+    V1CreateRoleThread,
     V1UserProfile,
-    RoleThreadsModel,
+    V1RoleThreads,
     PostMessageModel,
-    UpdateRoleThreadModel,
-    RoleModel,
-    DeleteRoleModel,
+    V1UpdateRoleThread,
+    V1Role,
+    V1DeleteRole,
 )
 from threadmem.auth.transport import get_current_user
 
 router = APIRouter()
 
 
-@router.post("/v1/rolethreads", response_model=RoleThreadModel)
+@router.post("/v1/rolethreads", response_model=V1RoleThread)
 async def create_role_thread(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)],
-    data: CreateRoleThreadModel,
+    data: V1CreateRoleThread,
 ):
     thread = RoleThread(
         public=data.public,
@@ -30,18 +30,18 @@ async def create_role_thread(
         owner_id=current_user.email,
     )
 
-    return thread.to_schema()
+    return thread.to_v1()
 
 
-@router.get("/v1/rolethreads", response_model=RoleThreadsModel)
+@router.get("/v1/rolethreads", response_model=V1RoleThreads)
 async def get_role_threads(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)]
 ):
     threads = RoleThread.find(owner_id=current_user.email)
-    return RoleThreadsModel(threads=[thread.to_schema() for thread in threads])
+    return V1RoleThreads(threads=[thread.to_v1() for thread in threads])
 
 
-@router.get("/v1/rolethreads/{id}", response_model=RoleThreadModel)
+@router.get("/v1/rolethreads/{id}", response_model=V1RoleThread)
 async def get_role_thread(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)], id: str
 ):
@@ -52,7 +52,7 @@ async def get_role_thread(
         print("\ndid not find thread by id: ", id)
         raise HTTPException(status_code=404, detail="Thread not found")
     print("\nfound thread by id: ", threads[0])
-    return threads[0].to_schema()
+    return threads[0].to_v1()
 
 
 @router.delete("/v1/rolethreads/{thread_id}")
@@ -87,7 +87,7 @@ async def post_role_thread_msg(
 async def add_role_to_thread(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)],
     id: str,
-    data: RoleModel,
+    data: V1Role,
 ):
     print("\nadding role to thread: ", data)
     thread = RoleThread.find(id=id, owner_id=current_user.email)
@@ -103,7 +103,7 @@ async def add_role_to_thread(
 async def remove_role_to_thread(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)],
     id: str,
-    data: DeleteRoleModel,
+    data: V1DeleteRole,
 ):
     print("\nremoving role to thread: ", data)
     thread = RoleThread.find(id=id, owner_id=current_user.email)
@@ -115,11 +115,11 @@ async def remove_role_to_thread(
     return
 
 
-@router.put("/v1/rolethreads/{id}", response_model=RoleThreadModel)
+@router.put("/v1/rolethreads/{id}", response_model=V1RoleThread)
 async def update_role_thread(
     current_user: Annotated[V1UserProfile, Depends(get_current_user)],
     id: str,
-    data: UpdateRoleThreadModel,
+    data: V1UpdateRoleThread,
 ):
     print("\n updating thread with model: ", data)
     threads = RoleThread.find(id=id, owner_id=current_user.email)
@@ -136,4 +136,4 @@ async def update_role_thread(
         thread.metadata = data.metadata
     print("\nsaving task: ", thread.__dict__)
     thread.save()
-    return thread.to_schema()
+    return thread.to_v1()

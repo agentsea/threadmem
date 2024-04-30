@@ -59,10 +59,22 @@ threads = RoleThread.find(owner_id="dolores@agentsea.ai")
 threads[0].delete()
 ```
 
-##### Supported Backends
+## Backends
+
+Thread and prompt storage can be backed by:
 
 - Sqlite
 - Postgresql
+
+Sqlite will be used by default. To use postgres simply configure the env vars:
+
+```sh
+DB_TYPE=postgres
+DB_NAME=threads
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASS=abc123
+```
 
 ## Develop
 
