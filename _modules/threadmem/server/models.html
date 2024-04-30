@@ -78,7 +78,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 
 
-<span class="k">class</span> <span class="nc">RoleMessageModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">V1RoleMessage</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">role</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
@@ -89,13 +89,13 @@
     <span class="n">thread_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<span class="k">class</span> <span class="nc">DeleteRoleModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">V1DeleteRole</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<div class="viewcode-block" id="RoleModel">
-<a class="viewcode-back" href="../../../api.html#threadmem.RoleModel">[docs]</a>
-<span class="k">class</span> <span class="nc">RoleModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="V1Role">
+<a class="viewcode-back" href="../../../api.html#threadmem.V1Role">[docs]</a>
+<span class="k">class</span> <span class="nc">V1Role</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">user_name</span><span class="p">:</span> <span class="nb">str</span>
@@ -104,16 +104,16 @@
 
 
 
-<div class="viewcode-block" id="RoleThreadModel">
-<a class="viewcode-back" href="../../../api.html#threadmem.RoleThreadModel">[docs]</a>
-<span class="k">class</span> <span class="nc">RoleThreadModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="V1RoleThread">
+<a class="viewcode-back" href="../../../api.html#threadmem.V1RoleThread">[docs]</a>
+<span class="k">class</span> <span class="nc">V1RoleThread</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">owner_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">public</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RoleMessageModel</span><span class="p">]</span>
-    <span class="n">role_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RoleModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">V1RoleMessage</span><span class="p">]</span>
+    <span class="n">role_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V1Role</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">created</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">updated</span><span class="p">:</span> <span class="nb">float</span>
@@ -121,20 +121,20 @@
 
 
 
-<div class="viewcode-block" id="RoleThreadsModel">
-<a class="viewcode-back" href="../../../api.html#threadmem.RoleThreadsModel">[docs]</a>
-<span class="k">class</span> <span class="nc">RoleThreadsModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">threads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RoleThreadModel</span><span class="p">]</span></div>
+<div class="viewcode-block" id="V1RoleThreads">
+<a class="viewcode-back" href="../../../api.html#threadmem.V1RoleThreads">[docs]</a>
+<span class="k">class</span> <span class="nc">V1RoleThreads</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">threads</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">V1RoleThread</span><span class="p">]</span></div>
 
 
 
-<span class="k">class</span> <span class="nc">UpdateRoleThreadModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">V1UpdateRoleThread</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">public</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<span class="k">class</span> <span class="nc">CreateRoleThreadModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">V1CreateRoleThread</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">public</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>

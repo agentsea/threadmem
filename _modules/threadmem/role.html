@@ -90,11 +90,11 @@
 <span class="kn">from</span> <span class="nn">threadmem.db.models</span> <span class="kn">import</span> <span class="n">RoleMessageRecord</span><span class="p">,</span> <span class="n">RoleThreadRecord</span>
 <span class="kn">from</span> <span class="nn">threadmem.db.conn</span> <span class="kn">import</span> <span class="n">WithDB</span>
 <span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RoleMessageModel</span><span class="p">,</span>
-    <span class="n">RoleThreadModel</span><span class="p">,</span>
-    <span class="n">UpdateRoleThreadModel</span><span class="p">,</span>
-    <span class="n">RoleThreadsModel</span><span class="p">,</span>
-    <span class="n">RoleModel</span><span class="p">,</span>
+    <span class="n">V1RoleMessage</span><span class="p">,</span>
+    <span class="n">V1RoleThread</span><span class="p">,</span>
+    <span class="n">V1UpdateRoleThread</span><span class="p">,</span>
+    <span class="n">V1RoleThreads</span><span class="p">,</span>
+    <span class="n">V1Role</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">HUB_API_KEY_ENV</span>
 
@@ -280,10 +280,10 @@
             <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="RoleMessage.from_schema">
-<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.from_schema">[docs]</a>
+<div class="viewcode-block" id="RoleMessage.from_v1">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.from_v1">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">RoleMessageModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleMessage&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">from_v1</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">V1RoleMessage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleMessage&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a RoleMessageModel instance into a RoleMessage instance.</span>
 
@@ -292,7 +292,7 @@
 <span class="sd">        and converts it into a RoleMessage object by directly mapping the schema fields to the RoleMessage object fields.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            schema (RoleMessageModel): The schema to convert.</span>
+<span class="sd">            schema (V1RoleMessage): The schema to convert.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            RoleMessage: The newly created RoleMessage object.</span>
@@ -309,9 +309,9 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="RoleMessage.to_schema">
-<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.to_schema">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoleMessageModel</span><span class="p">:</span>
+<div class="viewcode-block" id="RoleMessage.to_v1">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.to_v1">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V1RoleMessage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the current RoleMessage instance into a RoleMessageModel.</span>
 
@@ -322,7 +322,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            RoleMessageModel: The RoleMessageModel object created from the RoleMessage instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">RoleMessageModel</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">V1RoleMessage</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span>
             <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
@@ -354,7 +354,7 @@
         <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">remote</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">role_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RoleModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">role_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V1Role</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new instance of the RoleThread class.</span>
@@ -428,12 +428,12 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">role_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RoleModel</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">role_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V1Role</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_role_mapping</span>
 
 <div class="viewcode-block" id="RoleThread.add_role">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.add_role">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">RoleModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">V1Role</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new role to the role mapping of the thread.</span>
 
@@ -515,7 +515,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            str: A hexadecimal string representing the SHA-256 hash of the serialized RoleThread instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">task_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">task_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_v1</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">hash_version</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">task_data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">hash_version</span></div>
 
@@ -556,7 +556,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
                     <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s2">&quot;/v1/rolethreads/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2">/msgs&quot;</span><span class="p">,</span>
-                    <span class="n">msg</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+                    <span class="n">msg</span><span class="o">.</span><span class="n">to_v1</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
                 <span class="p">)</span>
                 <span class="c1"># print(&quot;\nrefreshing thread...&quot;)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
@@ -706,7 +706,7 @@
         <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">role_mapping</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="n">jdict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">role_mapping</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">role_name</span><span class="p">,</span> <span class="n">role_dict</span> <span class="ow">in</span> <span class="n">jdict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">role_mapping_dict</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">RoleModel</span><span class="p">(</span><span class="o">**</span><span class="n">role_dict</span><span class="p">)</span>
+                <span class="n">role_mapping_dict</span><span class="p">[</span><span class="n">role_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">V1Role</span><span class="p">(</span><span class="o">**</span><span class="n">role_dict</span><span class="p">)</span>
 
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">id</span>
@@ -726,7 +726,7 @@
 
 <div class="viewcode-block" id="RoleThread.to_update_schema">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_update_schema">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_update_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UpdateRoleThreadModel</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_update_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V1UpdateRoleThread</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates an UpdateRoleThreadModel instance with current thread properties.</span>
 
@@ -736,7 +736,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            UpdateRoleThreadModel: An instance populated with the current thread&#39;s name, visibility, and metadata.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">UpdateRoleThreadModel</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">V1UpdateRoleThread</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
             <span class="n">public</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_public</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">,</span>
@@ -795,7 +795,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
                     <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;/v1/rolethreads&quot;</span><span class="p">,</span>
-                    <span class="n">json_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+                    <span class="n">json_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_v1</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
                 <span class="p">)</span>
                 <span class="c1"># print(&quot;\ncreated new thread&quot;, self._id)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -846,8 +846,8 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;expected response from remote request to lest threads&quot;</span>
                 <span class="p">)</span>
-            <span class="n">threads</span> <span class="o">=</span> <span class="n">RoleThreadsModel</span><span class="p">(</span><span class="o">**</span><span class="n">remote_response</span><span class="p">)</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">threads</span><span class="o">.</span><span class="n">threads</span><span class="p">]</span>
+            <span class="n">threads</span> <span class="o">=</span> <span class="n">V1RoleThreads</span><span class="p">(</span><span class="o">**</span><span class="n">remote_response</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_v1</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">threads</span><span class="o">.</span><span class="n">threads</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
                 <span class="n">thread</span><span class="o">.</span><span class="n">_remote</span> <span class="o">=</span> <span class="n">remote</span>
                 <span class="c1"># print(&quot;\nreturning task: &quot;, thread.__dict__)</span>
@@ -900,10 +900,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the metadata of the thread.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="RoleThread.from_schema">
-<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.from_schema">[docs]</a>
+<div class="viewcode-block" id="RoleThread.from_v1">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.from_v1">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">RoleThreadModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleThread&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">from_v1</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">V1RoleThread</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RoleThread&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an instance of RoleThread from a RoleThreadModel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -914,7 +914,7 @@
         <span class="n">obj</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">name</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">metadata</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_messages</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">msg_schema</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">messages</span>
+            <span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_v1</span><span class="p">(</span><span class="n">msg_schema</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">messages</span>
         <span class="p">]</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_role_mapping</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">role_mapping</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_created</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">created</span>
@@ -924,20 +924,20 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="RoleThread.to_schema">
-<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_schema">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoleThreadModel</span><span class="p">:</span>
+<div class="viewcode-block" id="RoleThread.to_v1">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_v1">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V1RoleThread</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the RoleThread instance into a RoleThreadModel for API representation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">RoleThreadModel</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">V1RoleThread</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="p">,</span>
             <span class="n">owner_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner_id</span><span class="p">,</span>
             <span class="n">public</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_public</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">,</span>
-            <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">],</span>
+            <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">to_v1</span><span class="p">()</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">],</span>
             <span class="n">created</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_created</span><span class="p">,</span>
             <span class="n">updated</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_updated</span><span class="p">,</span>
             <span class="n">role_mapping</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_role_mapping</span><span class="p">,</span>
@@ -1060,12 +1060,12 @@
                 <span class="p">)</span>
                 <span class="c1"># print(&quot;\nfound remote thread&quot;, remote_thread)</span>
                 <span class="k">if</span> <span class="n">remote_thread</span><span class="p">:</span>
-                    <span class="n">schema</span> <span class="o">=</span> <span class="n">RoleThreadModel</span><span class="p">(</span><span class="o">**</span><span class="n">remote_thread</span><span class="p">)</span>
+                    <span class="n">schema</span> <span class="o">=</span> <span class="n">V1RoleThread</span><span class="p">(</span><span class="o">**</span><span class="n">remote_thread</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_public</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">public</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">name</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">metadata</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">msg_schema</span><span class="p">)</span>
+                        <span class="n">RoleMessage</span><span class="o">.</span><span class="n">from_v1</span><span class="p">(</span><span class="n">msg_schema</span><span class="p">)</span>
                         <span class="k">for</span> <span class="n">msg_schema</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">messages</span>
                     <span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_updated</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">updated</span>
@@ -1074,6 +1074,20 @@
                 <span class="k">raise</span> <span class="n">e</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Refresh is only supported for remote threads&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.remove_images">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.remove_images">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_images</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all images associated with this role thread.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;user&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
+                    <span class="n">message</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span></div>
 </div>
 
 </pre></div>
