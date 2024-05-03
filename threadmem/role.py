@@ -70,7 +70,7 @@ class RoleMessage(WithDB):
                 if c["type"] == "text":
                     text = c["text"]
                 elif c["type"] == "image_url":
-                    images.append(c["url"])
+                    images.append(c["image_url"]["url"])
         else:
             text = content
 
@@ -86,7 +86,14 @@ class RoleMessage(WithDB):
 
         # Add images if they exist
         for image_url in self.images:
-            content.append({"type": "image_url", "url": image_url})
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": image_url,
+                    },
+                }
+            )
 
         # Assemble the final JSON structure
         return {"role": self.role, "content": content}
