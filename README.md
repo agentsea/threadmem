@@ -10,7 +10,7 @@
   <p align="center">
     Chat thread memory for AI agents
     <br />
-    <a href="https://github.com/agentsea/threadmem"><strong>Explore the docs »</strong></a>
+    <a href="https://docs.hub.agentsea.ai/threadmem/intro"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/agentsea/threadmem">View Demo</a>
@@ -57,7 +57,7 @@ threads = RoleThread.find(owner_id="dolores@agentsea.ai")
 threads[0].delete()
 ```
 
-Add images of any variety to the thread, we support base64, filepath, PIL Image, and url
+Add images of any variety to the thread, we support base64, filepath, PIL, and URL
 
 ```python
 from PIL import Image
@@ -88,7 +88,7 @@ DB_USER=postgres
 DB_PASS=abc123
 ```
 
-Image storage by default will utilize the db, to configure bucket storage using GCS.
+Image storage by default will utilize the db, to configure bucket storage using GCS:
 
 - Create a bucket with fine grained permissions
 - Create a GCP service account JSON with permissions to write to the bucket
