@@ -24,17 +24,15 @@
 
 Threadmem is a simple tool that helps manage chat conversations with language models.
 
-## Backend
-
-### Installation
+## Installation
 
 ```
 pip install threadmem
 ```
 
-### Usage
+## Usage
 
-#### Role Threads
+### Role Threads
 
 Role based threads are useful for managing openai-style chat schemas.
 
@@ -59,6 +57,20 @@ threads = RoleThread.find(owner_id="dolores@agentsea.ai")
 threads[0].delete()
 ```
 
+Add images of any variety to the thread, we support base64, filepath, PIL Image, and url
+
+```python
+from PIL import Image
+
+img1 = Image.open("img1.png")
+
+thread.post(
+  role="user",
+  msg="Whats this image?",
+  images=["data:image/jpeg;base64,...", "./img1.png", img1, "https://shorturl.at/rVyAS"]
+)
+```
+
 ## Backends
 
 Thread and prompt storage can be backed by:
@@ -74,6 +86,19 @@ DB_NAME=threads
 DB_HOST=localhost
 DB_USER=postgres
 DB_PASS=abc123
+```
+
+Image storage by default will utilize the db, to configure bucket storage using GCS.
+
+- Create a bucket with fine grained permissions
+- Create a GCP service account JSON with permissions to write to the bucket
+
+```sh
+export THREAD_STORAGE_SA_JSON='{
+  "type": "service_account",
+  ...
+}'
+export THREAD_STORAGE_BUCKET=my-bucket
 ```
 
 ## Develop
