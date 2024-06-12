@@ -1,6 +1,9 @@
 from random import randint
+from re import I
 
-from threadmem import RoleThread, RoleMessage
+from PIL import Image
+
+from threadmem import RoleMessage, RoleThread
 
 
 def generate_random_user() -> str:
@@ -80,12 +83,23 @@ def test_post_message_to_RoleThread():
     thread = RoleThread(owner_id=owner_id, public=True, name="Test Thread")
     role = "user"
     message_text = "Hello, Thread!"
-    thread.post(role=role, msg=message_text, private=False)
+    img1 = Image.open("tests/data/img1.webp")
+    thread.post(
+        role=role,
+        msg=message_text,
+        private=False,
+        images=[
+            img1,
+            "./tests/data/img2.webp",
+            "https://storage.googleapis.com/agentsea-dev-hub-images/images/VGxrEQtzjJucL7D5PM6b3GGO.png",
+        ],
+    )
 
     assert len(thread.messages()) == 1
     assert thread.messages()[0].role == role
     assert thread.messages()[0].text == message_text
     assert thread.messages()[0].private is False
+    print(thread.messages()[0].images)
 
 
 def test_two_users_communication():

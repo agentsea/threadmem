@@ -1,5 +1,51 @@
+from typing import Dict, List, Optional
+
 from pydantic import BaseModel
-from typing import List, Optional, Dict
+
+
+class V1Message(BaseModel):
+    id: str
+    author: str
+    text: str
+    images: List[str] = []
+    private: Optional[bool] = None
+    metadata: Optional[dict] = None
+    created: float
+    thread_id: Optional[str] = None
+
+
+class V1DeleteThread(BaseModel):
+    name: str
+
+
+class V1Thread(BaseModel):
+    owner_id: Optional[str] = None
+    public: bool
+    name: Optional[str] = None
+    metadata: Optional[dict] = None
+    id: str
+    messages: List[V1Message]
+    version: Optional[str] = None
+    created: float
+    updated: float
+    remote: Optional[str] = None
+
+
+class V1Threads(BaseModel):
+    threads: List[V1Thread]
+
+
+class V1UpdateThread(BaseModel):
+    public: bool
+    name: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+class V1CreateThread(BaseModel):
+    public: bool = False
+    name: Optional[str] = None
+    metadata: Optional[dict] = None
+    id: Optional[str] = None
 
 
 class V1RoleMessage(BaseModel):
