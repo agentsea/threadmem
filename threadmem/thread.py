@@ -22,7 +22,7 @@ from threadmem.db.conn import WithDB
 from threadmem.db.models import MessageRecord, ThreadRecord
 
 from .env import HUB_API_KEY_ENV, STORAGE_BUCKET_ENV, STORAGE_SA_JSON_ENV
-from .img import image_to_b64
+from .img import convert_images, image_to_b64
 from .role import RoleMessage, RoleThread
 from .server.models import V1Message, V1Thread, V1Threads, V1UpdateThread
 
@@ -59,55 +59,6 @@ class Message(WithDB):
     def __post_init__(self) -> None:
         self.save()
 
-    def _parse_image_data(self, image_data_str: str):
-        """Parses the image data URL to extract the MIME type and base64 data."""
-        data_url_pattern = re.compile(
-            r"data:(?P<mime_type>[^;]+);base64,(?P<base64_data>.+)"
-        )
-        match = data_url_pattern.match(image_data_str)
-        if not match:
-            raise ValueError("Invalid image data format")
-        mime_type = match.group("mime_type")
-        base64_data = match.group("base64_data")
-        return mime_type, base64_data
-
-    def _generate_random_suffix(self, length: int = 24) -> str:
-        """Generates a random suffix for the image file name."""
-        return "".join(
-            secrets.choice(string.ascii_letters + string.digits) for _ in range(length)
-        )
-
-    def _upload_image_to_gcs(self, image_data: bytes, mime_type: str) -> str:
-        """Uploads an image to Google Cloud Storage and returns the public URL."""
-        sa = os.getenv(STORAGE_SA_JSON_ENV)
-        if not sa:
-            raise ValueError(f"Environment variable {STORAGE_SA_JSON_ENV} not set")
-        storage_client = storage.Client.from_service_account_json(sa)
-        bucket_name = os.getenv(STORAGE_BUCKET_ENV)
-        if not bucket_name:
-            raise ValueError(f"Environment variable {STORAGE_BUCKET_ENV} not set")
-        bucket = storage_client.bucket(bucket_name)
-
-        random_suffix = self._generate_random_suffix()
-        extension = mimetypes.guess_extension(mime_type)
-        blob_name = f"images/{random_suffix}{extension}"
-        blob = bucket.blob(blob_name)
-
-        # Create a temporary file to write the image data
-        with tempfile.NamedTemporaryFile(delete=False, suffix=extension) as temp_file:
-            temp_file.write(image_data)
-            temp_file_name = temp_file.name
-
-        # Upload the temporary file to Google Cloud Storage
-        blob.upload_from_filename(temp_file_name)
-        blob.content_type = mime_type
-        blob.make_public()
-
-        # Delete the temporary file
-        os.remove(temp_file_name)
-
-        return blob.public_url
-
     def to_record(self) -> MessageRecord:
         """
         Converts the Message instance into a MessageRecord for database storage.
@@ -118,18 +69,8 @@ class Message(WithDB):
         metadata = json.dumps(self.metadata) if self.metadata else None
         images = json.dumps(self.images) if self.images else None
 
-        sa = os.getenv(STORAGE_SA_JSON_ENV)
-        if sa:
-            new_images = []
-            for image in self.images:
-                if not image.startswith("https://"):
-                    mime_type, base64_data = self._parse_image_data(image)
-                    image_data = base64.b64decode(base64_data)
-                    public_url = self._upload_image_to_gcs(image_data, mime_type)
-                    new_images.append(public_url)
-                else:
-                    new_images.append(image)
-            images = json.dumps(new_images)
+        new_imgs = convert_images(self.images)  # type: ignore
+        images = json.dumps(new_imgs)
 
         return MessageRecord(
             id=self.id,
@@ -417,9 +358,8 @@ class Thread(WithDB):
                 else:
                     loaded_img = Image.open(img)
                     new_imgs.append(image_to_b64(loaded_img))
-                new_imgs.append(img)
             else:
-                raise ValueError("unknown image type")
+                raise ValueError("unnknown image type")
 
         if self._remote:
             try:
@@ -834,7 +774,9 @@ class Thread(WithDB):
         for message in self.messages():
             role = role_mapping.get(message.author)
             if not role:
-                raise ValueError(f"expected author '{message.author}' to be in role mapping")
+                raise ValueError(
+                    f"expected author '{message.author}' to be in role mapping"
+                )
             role_message = RoleMessage(
                 role=role,
                 text=message.text,
