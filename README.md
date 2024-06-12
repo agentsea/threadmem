@@ -57,7 +57,7 @@ threads = RoleThread.find(owner_id="dolores@agentsea.ai")
 threads[0].delete()
 ```
 
-Add images of any variety to the thread, we support base64, filepath, PIL, and URL
+Add images of any variety to the thread. We support base64, filepath, PIL, and URL
 
 ```python
 from PIL import Image
