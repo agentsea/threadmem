@@ -80,6 +80,10 @@ Threadmem is integrated into:
 - [Skillpacks](https://github.com/agentsea/skillpacks) A library to fine tune AI agents on tasks.
 - [Surfkit](https://github.com/agentsea/surfkit) A platform for AI agents
 
+## Community
+
+Come join us on [Slack](https://agentsea.slack.com/join/signup)
+
 ## Backends
 
 Thread and prompt storage can be backed by:
