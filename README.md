@@ -13,8 +13,6 @@
     <a href="https://docs.hub.agentsea.ai/threadmem/intro"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/agentsea/threadmem">View Demo</a>
-    ·
     <a href="https://github.com/agentsea/threadmem/issues">Report Bug</a>
     ·
     <a href="https://github.com/agentsea/threadmem/issues">Request Feature</a>
@@ -22,7 +20,7 @@
   <br>
 </p>
 
-Threadmem is a simple tool that helps manage chat conversations with language models.
+ThreadMem is a simple tool that helps manage chat conversations with language models.
 
 ## Installation
 
@@ -57,7 +55,7 @@ threads = RoleThread.find(owner_id="dolores@agentsea.ai")
 threads[0].delete()
 ```
 
-Add images of any variety to the thread. We support base64, filepath, PIL, and URL
+Add images of any variety to the thread. We support base64, filepath, PIL, and URL:
 
 ```python
 from PIL import Image
@@ -75,14 +73,14 @@ thread.post(
 
 Threadmem is integrated into:
 
-- [MLLM](https://github.com/agentsea/mllm) A prompt management, routing, and schema validation library for multimodal LLMs
-- [Taskara](https://github.com/agentsea/taskara) A task management library for AI agents
-- [Skillpacks](https://github.com/agentsea/skillpacks) A library to fine tune AI agents on tasks.
-- [Surfkit](https://github.com/agentsea/surfkit) A platform for AI agents
+- [MLLM](https://github.com/agentsea/mllm) - A prompt management, routing, and schema validation library for multimodal LLMs.
+- [Taskara](https://github.com/agentsea/taskara) - A task management library for AI agents.
+- [Skillpacks](https://github.com/agentsea/skillpacks) - A library to fine tune AI agents on tasks.
+- [SurfKit](https://github.com/agentsea/surfkit) - A platform for AI agents.
 
 ## Community
 
-Come join us on [Slack](https://agentsea.slack.com/join/signup)
+Come join us on [Slack](https://agentsea.slack.com/join/signup).
 
 ## Backends
 
