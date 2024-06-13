@@ -16,4 +16,4 @@ which can be either public or private, and allows for detailed tracking and vers
    :maxdepth: 1
    :caption: ↪
 
-   Go to User Guide <https://agentsea.github.io/threadmem.html>
+   Go to User Guide <https://docs.hub.agentsea.ai/threadmem/intro>
