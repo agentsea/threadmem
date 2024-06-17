@@ -13,6 +13,8 @@
     <a href="https://docs.hub.agentsea.ai/threadmem/intro"><strong>Explore the docs »</strong></a>
     <br />
     <br />
+    <a href="https://youtu.be/exoOUUwFRB8">View Demo</a>
+    ·
     <a href="https://github.com/agentsea/threadmem/issues">Report Bug</a>
     ·
     <a href="https://github.com/agentsea/threadmem/issues">Request Feature</a>
