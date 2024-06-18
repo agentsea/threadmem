@@ -82,7 +82,7 @@ Threadmem is integrated into:
 
 ## Community
 
-Come join us on [Slack](https://agentsea.slack.com/join/signup).
+Come join us on [Discord](https://discord.gg/hhaq7XYPS6).
 
 ## Backends
 
