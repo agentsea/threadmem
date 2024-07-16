@@ -317,7 +317,7 @@ class RoleThread(WithDB):
                     if c["type"] == "text":
                         text = c["text"]
                     elif c["type"] == "image_url":
-                        images.append(c["url"])
+                        images.append(c["image_url"]["url"])
             else:
                 text = content
 
