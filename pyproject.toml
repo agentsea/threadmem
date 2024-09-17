@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "threadmem"
-version = "0.2.30"
+version = "0.2.31"
 description = "Thread memory for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
 license = "MIT"
