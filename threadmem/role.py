@@ -60,7 +60,6 @@ class RoleMessage(WithDB):
         self.id = shortuuid.uuid()
         self.metadata = metadata
 
-    def __post_init__(self) -> None:
         self.save()
 
     @classmethod
