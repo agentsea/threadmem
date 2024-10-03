@@ -46,19 +46,11 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#threadmem.RoleMessage"><code class="docutils literal notranslate"><span class="pre">RoleMessage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.created"><code class="docutils literal notranslate"><span class="pre">RoleMessage.created</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.find"><code class="docutils literal notranslate"><span class="pre">RoleMessage.find()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_openai"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_record"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_v1"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_v1()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.id"><code class="docutils literal notranslate"><span class="pre">RoleMessage.id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.images"><code class="docutils literal notranslate"><span class="pre">RoleMessage.images</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.metadata"><code class="docutils literal notranslate"><span class="pre">RoleMessage.metadata</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.private"><code class="docutils literal notranslate"><span class="pre">RoleMessage.private</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.role"><code class="docutils literal notranslate"><span class="pre">RoleMessage.role</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.save"><code class="docutils literal notranslate"><span class="pre">RoleMessage.save()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.text"><code class="docutils literal notranslate"><span class="pre">RoleMessage.text</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.thread_id"><code class="docutils literal notranslate"><span class="pre">RoleMessage.thread_id</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_openai"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_openai()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_record"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_v1"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_v1()</span></code></a></li>
@@ -164,7 +156,7 @@
 <span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-threadmem" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="threadmem.RoleMessage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">threadmem.</span></span><span class="sig-name descname"><span class="pre">RoleMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_id:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">threadmem.</span></span><span class="sig-name descname"><span class="pre">RoleMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">private</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WithDB</span></code></p>
 <p>A role-based chat message that supports text, optional images, and metadata.
 It can be marked as private and is associated with a specific thread and role.
@@ -177,17 +169,10 @@ Each message is uniquely identified by an ID and records the creation time.</p>
 <li><p><strong>thread_id</strong> (<em>str</em>) – The ID of the thread this message belongs to.</p></li>
 <li><p><strong>images</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of image URLs associated with the message. Defaults to an empty list.</p></li>
 <li><p><strong>private</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – A flag indicating if the message is private. Defaults to False.</p></li>
-<li><p><strong>created</strong> (<em>float</em>) – The timestamp of when the message was created. Defaults to the current time.</p></li>
-<li><p><strong>id</strong> (<em>str</em>) – A unique identifier for the message. Defaults to a UUID4 string.</p></li>
 <li><p><strong>metadata</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em>) – Additional metadata associated with the message. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.created">
-<span class="sig-name descname"><span class="pre">created</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#threadmem.RoleMessage.created" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.find">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#threadmem.RoleMessage" title="threadmem.role.RoleMessage"><span class="pre">RoleMessage</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.find" title="Link to this definition"></a></dt>
@@ -260,31 +245,6 @@ and converts it into a RoleMessage object by directly mapping the schema fields 
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.id">
-<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#threadmem.RoleMessage.id" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.images">
-<span class="sig-name descname"><span class="pre">images</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#threadmem.RoleMessage.images" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#threadmem.RoleMessage.metadata" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.private">
-<span class="sig-name descname"><span class="pre">private</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#threadmem.RoleMessage.private" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.role">
-<span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#threadmem.RoleMessage.role" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.save" title="Link to this definition"></a></dt>
@@ -298,16 +258,6 @@ After merging, it commits the changes to the database to ensure the RoleMessage 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.text">
-<span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#threadmem.RoleMessage.text" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.RoleMessage.thread_id">
-<span class="sig-name descname"><span class="pre">thread_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#threadmem.RoleMessage.thread_id" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.to_openai">

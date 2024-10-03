@@ -80,18 +80,17 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">asc</span>
+<span class="kn">import</span> <span class="nn">shortuuid</span>
 
 <span class="kn">from</span> <span class="nn">threadmem.db.conn</span> <span class="kn">import</span> <span class="n">WithDB</span>
 <span class="kn">from</span> <span class="nn">threadmem.db.models</span> <span class="kn">import</span> <span class="n">RoleMessageRecord</span><span class="p">,</span> <span class="n">RoleThreadRecord</span>
 
-<span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">HUB_API_KEY_ENV</span><span class="p">,</span> <span class="n">STORAGE_BUCKET_ENV</span><span class="p">,</span> <span class="n">STORAGE_SA_JSON_ENV</span>
+<span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">HUB_API_KEY_ENV</span>
 <span class="kn">from</span> <span class="nn">.img</span> <span class="kn">import</span> <span class="n">convert_images</span><span class="p">,</span> <span class="n">image_to_b64</span>
 <span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">V1Role</span><span class="p">,</span>
@@ -106,7 +105,6 @@
 
 <div class="viewcode-block" id="RoleMessage">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleMessage">[docs]</a>
-<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">RoleMessage</span><span class="p">(</span><span class="n">WithDB</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A role-based chat message that supports text, optional images, and metadata.</span>
@@ -119,21 +117,27 @@
 <span class="sd">        thread_id (str): The ID of the thread this message belongs to.</span>
 <span class="sd">        images (List[str]): A list of image URLs associated with the message. Defaults to an empty list.</span>
 <span class="sd">        private (Optional[bool]): A flag indicating if the message is private. Defaults to False.</span>
-<span class="sd">        created (float): The timestamp of when the message was created. Defaults to the current time.</span>
-<span class="sd">        id (str): A unique identifier for the message. Defaults to a UUID4 string.</span>
 <span class="sd">        metadata (Optional[dict]): Additional metadata associated with the message. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">role</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">thread_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">images</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">private</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">created</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()))</span>
-    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">role</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">thread_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">images</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">private</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">role</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread_id</span> <span class="o">=</span> <span class="n">thread_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">convert_images</span><span class="p">(</span><span class="n">images</span><span class="p">)</span> <span class="k">if</span> <span class="n">images</span> <span class="k">else</span> <span class="p">[]</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private</span> <span class="o">=</span> <span class="n">private</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">shortuuid</span><span class="o">.</span><span class="n">uuid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
 <div class="viewcode-block" id="RoleMessage.from_openai">
@@ -194,9 +198,7 @@
 <span class="sd">            RoleMessageRecord: An instance of RoleMessageRecord with fields populated from the RoleMessage instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="k">else</span> <span class="kc">None</span>
-
-        <span class="n">new_imgs</span> <span class="o">=</span> <span class="n">convert_images</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="n">images</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">new_imgs</span><span class="p">)</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">RoleMessageRecord</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
@@ -1077,7 +1079,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">:</span>
             <span class="c1"># print(&quot;\nrefreshing remote thread&quot;, self._id)</span>
             <span class="k">try</span><span class="p">:</span>
-
                 <span class="n">remote_thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_request</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_remote</span><span class="p">,</span>
                     <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
