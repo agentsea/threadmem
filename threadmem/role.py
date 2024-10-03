@@ -4,18 +4,17 @@ import json
 import os
 import time
 import uuid
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TypeVar
 
 import requests
-from google.cloud import storage
 from PIL import Image
 from sqlalchemy import asc
+import shortuuid
 
 from threadmem.db.conn import WithDB
 from threadmem.db.models import RoleMessageRecord, RoleThreadRecord
 
-from .env import HUB_API_KEY_ENV, STORAGE_BUCKET_ENV, STORAGE_SA_JSON_ENV
+from .env import HUB_API_KEY_ENV
 from .img import convert_images, image_to_b64
 from .server.models import (
     V1Role,
@@ -28,7 +27,6 @@ from .server.models import (
 R = TypeVar("R", bound="RoleThread")
 
 
-@dataclass
 class RoleMessage(WithDB):
     """
     A role-based chat message that supports text, optional images, and metadata.
@@ -41,21 +39,27 @@ class RoleMessage(WithDB):
         thread_id (str): The ID of the thread this message belongs to.
         images (List[str]): A list of image URLs associated with the message. Defaults to an empty list.
         private (Optional[bool]): A flag indicating if the message is private. Defaults to False.
-        created (float): The timestamp of when the message was created. Defaults to the current time.
-        id (str): A unique identifier for the message. Defaults to a UUID4 string.
         metadata (Optional[dict]): Additional metadata associated with the message. Defaults to None.
     """
 
-    role: str
-    text: str
-    thread_id: Optional[str] = None
-    images: List[str] = field(default_factory=list)
-    private: Optional[bool] = False
-    created: float = field(default_factory=time.time)
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    metadata: Optional[dict] = None
+    def __init__(
+        self,
+        role: str,
+        text: str,
+        thread_id: Optional[str] = None,
+        images: List[str] = [],
+        private: Optional[bool] = False,
+        metadata: Optional[dict] = None,
+    ) -> None:
+        self.role = role
+        self.text = text
+        self.thread_id = thread_id
+        self.images = convert_images(images) if images else []  # type: ignore
+        self.private = private
+        self.created = time.time()
+        self.id = shortuuid.uuid()
+        self.metadata = metadata
 
-    def __post_init__(self) -> None:
         self.save()
 
     @classmethod
@@ -108,9 +112,7 @@ class RoleMessage(WithDB):
             RoleMessageRecord: An instance of RoleMessageRecord with fields populated from the RoleMessage instance.
         """
         metadata = json.dumps(self.metadata) if self.metadata else None
-
-        new_imgs = convert_images(self.images)  # type: ignore
-        images = json.dumps(new_imgs)
+        images = json.dumps(self.images)
 
         return RoleMessageRecord(
             id=self.id,
@@ -919,7 +921,6 @@ class RoleThread(WithDB):
         if self._remote:
             # print("\nrefreshing remote thread", self._id)
             try:
-
                 remote_thread = self._remote_request(
                     self._remote,
                     "GET",
