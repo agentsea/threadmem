@@ -9,10 +9,9 @@ from io import BytesIO
 from typing import List
 
 from google.cloud import storage
-from PIL import Image, ImageDraw, ImageFont
-from sqlalchemy import asc
+from PIL import Image
 
-from .env import HUB_API_KEY_ENV, STORAGE_BUCKET_ENV, STORAGE_SA_JSON_ENV
+from .env import STORAGE_BUCKET_ENV, STORAGE_SA_JSON_ENV
 
 
 def image_to_b64(img: Image.Image, image_format="PNG") -> str:

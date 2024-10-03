@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "threadmem"
-version = "0.2.31"
+version = "0.2.32"
 description = "Thread memory for AI agents"
 authors = ["Patrick Barker <patrickbarkerco@gmail.com>"]
 license = "MIT"
@@ -15,6 +15,7 @@ requests = "^2.31.0"
 fastapi = {version = "^0.109", extras = ["all"]}
 google-cloud-storage = "^2.17.0"
 pillow = "^10.3.0"
+shortuuid = "^1.0.13"
 
 
 [tool.poetry.group.dev.dependencies]
