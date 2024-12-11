@@ -7,9 +7,9 @@ import uuid
 from typing import Any, Dict, List, Optional, TypeVar
 
 import requests
+import shortuuid
 from PIL import Image
 from sqlalchemy import asc
-import shortuuid
 
 from threadmem.db.conn import WithDB
 from threadmem.db.models import RoleMessageRecord, RoleThreadRecord
@@ -86,20 +86,39 @@ class RoleMessage(WithDB):
         """Converts a RoleMessage to the format expected by OpenAI."""
         content = []
 
-        # Add text content if it exists
+        # Split text by <image> tags and process each part
         if self.text:
-            content.append({"type": "text", "text": self.text})
+            parts = self.text.split("<image>")
+            image_index = 0
 
-        # Add images if they exist
-        for image_url in self.images:
-            content.append(
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": image_url,
-                    },
-                }
-            )
+            for i, part in enumerate(parts):
+                # Add text content if it exists (strip to remove any whitespace)
+                if part.strip():
+                    content.append({"type": "text", "text": part.strip()})
+
+                # Add the next image after each text part (except for the last split)
+                if i < len(parts) - 1 and image_index < len(self.images):
+                    content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": self.images[image_index],
+                            },
+                        }
+                    )
+                    image_index += 1
+
+            # Add any remaining images
+            while image_index < len(self.images):
+                content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": self.images[image_index],
+                        },
+                    }
+                )
+                image_index += 1
 
         # Assemble the final JSON structure
         return {"role": self.role, "content": content}
