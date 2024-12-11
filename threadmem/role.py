@@ -89,15 +89,22 @@ class RoleMessage(WithDB):
         # Split text by <image> tags and process each part
         if self.text:
             parts = self.text.split("<image>")
-            image_index = 0
+            num_tags = len(parts) - 1  # number of <image> tags
 
+            # If there are image tags, verify they match number of images
+            if num_tags > 0 and num_tags != len(self.images):
+                raise ValueError(
+                    f"Number of <image> tags ({num_tags}) must match number of images ({len(self.images)})"
+                )
+
+            image_index = 0
             for i, part in enumerate(parts):
                 # Add text content if it exists (strip to remove any whitespace)
                 if part.strip():
                     content.append({"type": "text", "text": part.strip()})
 
                 # Add the next image after each text part (except for the last split)
-                if i < len(parts) - 1 and image_index < len(self.images):
+                if i < len(parts) - 1:
                     content.append(
                         {
                             "type": "image_url",
@@ -108,17 +115,17 @@ class RoleMessage(WithDB):
                     )
                     image_index += 1
 
-            # Add any remaining images
-            while image_index < len(self.images):
+        # If there are no image tags but we have images, append them at the end
+        if len(self.text.split("<image>")) == 1 and self.images:
+            for image in self.images:
                 content.append(
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": self.images[image_index],
+                            "url": image,
                         },
                     }
                 )
-                image_index += 1
 
         # Assemble the final JSON structure
         return {"role": self.role, "content": content}

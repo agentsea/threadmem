@@ -1,5 +1,7 @@
 from random import randint
 
+import pytest
+
 from threadmem import RoleMessage
 from threadmem.db.models import RoleMessageRecord
 
@@ -68,6 +70,118 @@ def test_role_message_post_init_autosave():
     stored_message = db.query(RoleMessageRecord).filter_by(id=role_message.id).first()
     assert stored_message is not None
     assert stored_message.text == "Auto Save Test"  # type: ignore
+
+
+def test_role_message_to_openai_with_image_tags():
+    # Test case 1: Text with embedded image tags matching number of images
+    role_message = RoleMessage(
+        role="user",
+        text="Here's the first image: <image> And here's the second one: <image> And some final text",
+        images=[
+            "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg",
+            "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg",
+        ],
+    )
+
+    openai_format = role_message.to_openai()
+    assert openai_format["role"] == "user"
+    assert len(openai_format["content"]) == 5  # 3 text parts + 2 images
+    assert openai_format["content"][0] == {
+        "type": "text",
+        "text": "Here's the first image:",
+    }
+    assert openai_format["content"][1] == {
+        "type": "image_url",
+        "image_url": {
+            "url": "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg"
+        },
+    }
+    assert openai_format["content"][2] == {
+        "type": "text",
+        "text": "And here's the second one:",
+    }
+    assert openai_format["content"][3] == {
+        "type": "image_url",
+        "image_url": {
+            "url": "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg"
+        },
+    }
+    assert openai_format["content"][4] == {
+        "type": "text",
+        "text": "And some final text",
+    }
+
+    # Test case 2: Text with no image tags and no images
+    role_message = RoleMessage(
+        role="user",
+        text="Just some text",
+        images=[],
+    )
+
+    openai_format = role_message.to_openai()
+    assert len(openai_format["content"]) == 1  # just text
+    assert openai_format["content"][0] == {"type": "text", "text": "Just some text"}
+
+    # Test case 3: Text with no image tags but with images (images should be appended)
+    role_message = RoleMessage(
+        role="user",
+        text="Just some text",
+        images=[
+            "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg",
+            "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg",
+        ],
+    )
+
+    openai_format = role_message.to_openai()
+    assert len(openai_format["content"]) == 3  # 1 text + 2 images
+    assert openai_format["content"][0] == {"type": "text", "text": "Just some text"}
+    assert openai_format["content"][1] == {
+        "type": "image_url",
+        "image_url": {
+            "url": "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg"
+        },
+    }
+    assert openai_format["content"][2] == {
+        "type": "image_url",
+        "image_url": {
+            "url": "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg"
+        },
+    }
+
+    # Test case 4: More image tags than images should raise ValueError
+    with pytest.raises(
+        ValueError, match="Number of <image> tags .* must match number of images"
+    ):
+        role_message = RoleMessage(
+            role="user",
+            text="Image here: <image> Another here: <image> And here: <image>",
+            images=["https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg"],
+        )
+        role_message.to_openai()
+
+    # Test case 5: More images than image tags should raise ValueError
+    with pytest.raises(
+        ValueError, match="Number of <image> tags .* must match number of images"
+    ):
+        role_message = RoleMessage(
+            role="user",
+            text="Image here: <image>",
+            images=[
+                "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg",
+                "https://cdn.britannica.com/51/94151-050-99189B61/Barn.jpg",
+            ],
+        )
+        role_message.to_openai()
+
+    # Test case 6: Empty text with no images
+    role_message = RoleMessage(
+        role="user",
+        text="",
+        images=[],
+    )
+
+    openai_format = role_message.to_openai()
+    assert len(openai_format["content"]) == 0  # empty content
 
 
 def test_multiple_role_message_creation():
