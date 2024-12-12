@@ -81,6 +81,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.role_mapping"><code class="docutils literal notranslate"><span class="pre">RoleThread.role_mapping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.save"><code class="docutils literal notranslate"><span class="pre">RoleThread.save()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_openai"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_openai()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_orign"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_orign()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_record"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_update_schema"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_update_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleThread.to_v1"><code class="docutils literal notranslate"><span class="pre">RoleThread.to_v1()</span></code></a></li>
@@ -262,7 +263,7 @@ After merging, it commits the changes to the database to ensure the RoleMessage 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleMessage.to_orign">
-<span class="sig-name descname"><span class="pre">to_orign</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Prompt</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_orign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_orign" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_orign</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MessageItem</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_orign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_orign" title="Link to this definition"></a></dt>
 <dd><p>Converts a RoleMessage to an Orign Prompt format.</p>
 </dd></dl>
 
@@ -580,6 +581,12 @@ If the thread is local, it saves the thread to the database.</p>
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_openai">
 <span class="sig-name descname"><span class="pre">to_openai</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_openai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_openai" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleThread.to_orign">
+<span class="sig-name descname"><span class="pre">to_orign</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Prompt</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleThread.to_orign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleThread.to_orign" title="Link to this definition"></a></dt>
+<dd><p>Converts a RoleThread to an Orign Prompt format.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="threadmem.RoleThread.to_record">

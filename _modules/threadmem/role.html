@@ -217,7 +217,7 @@
 
 <div class="viewcode-block" id="RoleMessage.to_orign">
 <a class="viewcode-back" href="../../api.html#threadmem.RoleMessage.to_orign">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_orign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Prompt</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_orign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MessageItem</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a RoleMessage to an Orign Prompt format.&quot;&quot;&quot;</span>
         <span class="n">content</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ContentItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -258,11 +258,12 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-        <span class="c1"># Create the message item</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="n">MessageItem</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span> <span class="k">if</span> <span class="n">content</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="c1"># If we have no images and just a single text, return it directly as a string</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MessageItem</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
-        <span class="c1"># Return the final Prompt structure</span>
-        <span class="k">return</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">message</span><span class="p">])</span></div>
+        <span class="c1"># For empty content or content with images, return the list</span>
+        <span class="k">return</span> <span class="n">MessageItem</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span> <span class="k">if</span> <span class="n">content</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RoleMessage.to_record">
@@ -516,6 +517,13 @@
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="RoleThread.to_orign">
+<a class="viewcode-back" href="../../api.html#threadmem.RoleThread.to_orign">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_orign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Prompt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a RoleThread to an Orign Prompt format.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">to_orign</span><span class="p">()</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">])</span></div>
 
 
     <span class="nd">@property</span>
