@@ -172,11 +172,12 @@ class RoleMessage(WithDB):
                     )
                 )
 
-        # Create the message item
-        message = MessageItem(role=self.role, content=content if content else self.text)
+        # If we have no images and just a single text, return it directly as a string
+        if not self.images and len(content) == 1 and content[0].type == "text":
+            return MessageItem(role=self.role, content=content[0].text)  # type: ignore
 
-        # Return the final Prompt structure
-        return message
+        # For empty content or content with images, return the list
+        return MessageItem(role=self.role, content=content if content else "")
 
     def to_record(self) -> RoleMessageRecord:
         """

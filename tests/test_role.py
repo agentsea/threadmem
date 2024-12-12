@@ -84,11 +84,9 @@ def test_role_message_to_orign():
     )
 
     prompt = role_message.to_orign()
-    assert len(prompt.messages) == 1
-    message = prompt.messages[0]
-    assert message.role == "user"
-    assert isinstance(message.content, list)
-    content = message.content
+    assert prompt.role == "user"
+    assert isinstance(prompt.content, list)
+    content = prompt.content
     assert len(content) == 5  # 3 text parts + 2 images
 
     assert content[0].type == "text"
@@ -110,14 +108,9 @@ def test_role_message_to_orign():
     )
 
     prompt = role_message.to_orign()
-    assert len(prompt.messages) == 1
-    message = prompt.messages[0]
-    assert message.role == "user"
-    assert isinstance(message.content, list)
-    content = message.content
-    assert len(content) == 1
-    assert content[0].type == "text"
-    assert content[0].text == "Just some text"
+    assert prompt.role == "user"
+    assert isinstance(prompt.content, str)
+    assert prompt.content == "Just some text"
 
     # Test case 3: Text with no image tags but with images (images should be appended)
     role_message = RoleMessage(
@@ -130,11 +123,9 @@ def test_role_message_to_orign():
     )
 
     prompt = role_message.to_orign()
-    assert len(prompt.messages) == 1
-    message = prompt.messages[0]
-    assert message.role == "user"
-    assert isinstance(message.content, list)
-    content = message.content
+    assert prompt.role == "user"
+    assert isinstance(prompt.content, list)
+    content = prompt.content
     assert len(content) == 3  # 1 text + 2 images
 
     assert content[0].type == "text"
@@ -154,11 +145,9 @@ def test_role_message_to_orign():
     )
 
     prompt = role_message.to_orign()
-    assert len(prompt.messages) == 1
-    message = prompt.messages[0]
-    assert message.role == "user"
-    assert isinstance(message.content, str)  # Changed to expect str instead of list
-    assert message.content == ""  # Empty string for empty content
+    assert prompt.role == "user"
+    assert isinstance(prompt.content, str)  # Changed to expect str instead of list
+    assert prompt.content == ""  # Empty string for empty content
 
     # Test case 4: More image tags than images should raise ValueError
     with pytest.raises(
