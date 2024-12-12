@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, TypeVar
 
 import requests
 import shortuuid
+from orign.models import ContentItem, ImageUrlContent, MessageItem, Prompt
 from PIL import Image
 from sqlalchemy import asc
 
@@ -129,6 +130,53 @@ class RoleMessage(WithDB):
 
         # Assemble the final JSON structure
         return {"role": self.role, "content": content}
+
+    def to_orign(self) -> Prompt:
+        """Converts a RoleMessage to an Orign Prompt format."""
+        content: List[ContentItem] = []
+
+        # Split text by <image> tags and process each part
+        if self.text:
+            parts = self.text.split("<image>")
+            num_tags = len(parts) - 1  # number of <image> tags
+
+            # If there are image tags, verify they match number of images
+            if num_tags > 0 and num_tags != len(self.images):
+                raise ValueError(
+                    f"Number of <image> tags ({num_tags}) must match number of images ({len(self.images)})"
+                )
+
+            image_index = 0
+            for i, part in enumerate(parts):
+                # Add text content if it exists (strip to remove any whitespace)
+                if part.strip():
+                    content.append(ContentItem(type="text", text=part.strip()))
+
+                # Add the next image after each text part (except for the last split)
+                if i < len(parts) - 1:
+                    content.append(
+                        ContentItem(
+                            type="image_url",
+                            image_url=ImageUrlContent(url=self.images[image_index]),
+                        )
+                    )
+                    image_index += 1
+
+        # If there are no image tags but we have images, append them at the end
+        if len(self.text.split("<image>")) == 1 and self.images:
+            for image in self.images:
+                content.append(
+                    ContentItem(
+                        type="image_url",
+                        image_url=ImageUrlContent(url=image),
+                    )
+                )
+
+        # Create the message item
+        message = MessageItem(role=self.role, content=content if content else self.text)
+
+        # Return the final Prompt structure
+        return Prompt(messages=[message])
 
     def to_record(self) -> RoleMessageRecord:
         """
