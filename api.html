@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.from_v1"><code class="docutils literal notranslate"><span class="pre">RoleMessage.from_v1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.save"><code class="docutils literal notranslate"><span class="pre">RoleMessage.save()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_openai"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_openai()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_orign"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_orign()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_record"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_record()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.RoleMessage.to_v1"><code class="docutils literal notranslate"><span class="pre">RoleMessage.to_v1()</span></code></a></li>
 </ul>
@@ -88,9 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#threadmem.V1Role"><code class="docutils literal notranslate"><span class="pre">V1Role</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.description"><code class="docutils literal notranslate"><span class="pre">V1Role.description</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.icon"><code class="docutils literal notranslate"><span class="pre">V1Role.icon</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">V1Role.model_computed_fields</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.model_config"><code class="docutils literal notranslate"><span class="pre">V1Role.model_config</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.model_fields"><code class="docutils literal notranslate"><span class="pre">V1Role.model_fields</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.name"><code class="docutils literal notranslate"><span class="pre">V1Role.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.user_id"><code class="docutils literal notranslate"><span class="pre">V1Role.user_id</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1Role.user_name"><code class="docutils literal notranslate"><span class="pre">V1Role.user_name</span></code></a></li>
@@ -101,9 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.id"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.id</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.messages"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.messages</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.metadata"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.metadata</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.model_computed_fields</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.model_config"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.model_config</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.model_fields"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.model_fields</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.name"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.owner_id"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.owner_id</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThread.public"><code class="docutils literal notranslate"><span class="pre">V1RoleThread.public</span></code></a></li>
@@ -114,9 +111,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#threadmem.V1RoleThreads"><code class="docutils literal notranslate"><span class="pre">V1RoleThreads</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThreads.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">V1RoleThreads.model_computed_fields</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThreads.model_config"><code class="docutils literal notranslate"><span class="pre">V1RoleThreads.model_config</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThreads.model_fields"><code class="docutils literal notranslate"><span class="pre">V1RoleThreads.model_fields</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#threadmem.V1RoleThreads.threads"><code class="docutils literal notranslate"><span class="pre">V1RoleThreads.threads</span></code></a></li>
 </ul>
 </li>
@@ -263,6 +258,12 @@ After merging, it commits the changes to the database to ensure the RoleMessage 
 <dt class="sig sig-object py" id="threadmem.RoleMessage.to_openai">
 <span class="sig-name descname"><span class="pre">to_openai</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_openai"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_openai" title="Link to this definition"></a></dt>
 <dd><p>Converts a RoleMessage to the format expected by OpenAI.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="threadmem.RoleMessage.to_orign">
+<span class="sig-name descname"><span class="pre">to_orign</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Prompt</span></span></span><a class="reference internal" href="_modules/threadmem/role.html#RoleMessage.to_orign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.RoleMessage.to_orign" title="Link to this definition"></a></dt>
+<dd><p>Converts a RoleMessage to an Orign Prompt format.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -633,23 +634,9 @@ It includes the thread’s name, visibility (public or private), and metadata.</
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.V1Role.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#threadmem.V1Role.model_computed_fields" title="Link to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.V1Role.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#threadmem.V1Role.model_config" title="Link to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.V1Role.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'description':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'icon':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'user_id':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'user_name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True)}</span></em><a class="headerlink" href="#threadmem.V1Role.model_fields" title="Link to this definition"></a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -694,23 +681,9 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.V1RoleThread.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#threadmem.V1RoleThread.model_computed_fields" title="Link to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.V1RoleThread.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#threadmem.V1RoleThread.model_config" title="Link to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.V1RoleThread.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'created':</span> <span class="pre">FieldInfo(annotation=float,</span> <span class="pre">required=True),</span> <span class="pre">'id':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'messages':</span> <span class="pre">FieldInfo(annotation=List[V1RoleMessage],</span> <span class="pre">required=True),</span> <span class="pre">'metadata':</span> <span class="pre">FieldInfo(annotation=Union[dict,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'name':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'owner_id':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'public':</span> <span class="pre">FieldInfo(annotation=bool,</span> <span class="pre">required=True),</span> <span class="pre">'remote':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'role_mapping':</span> <span class="pre">FieldInfo(annotation=Dict[str,</span> <span class="pre">V1Role],</span> <span class="pre">required=False,</span> <span class="pre">default={}),</span> <span class="pre">'updated':</span> <span class="pre">FieldInfo(annotation=float,</span> <span class="pre">required=True),</span> <span class="pre">'version':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False)}</span></em><a class="headerlink" href="#threadmem.V1RoleThread.model_fields" title="Link to this definition"></a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -755,23 +728,9 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">threadmem.</span></span><span class="sig-name descname"><span class="pre">V1RoleThreads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#threadmem.V1RoleThread" title="threadmem.server.models.V1RoleThread"><span class="pre">V1RoleThread</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/threadmem/server/models.html#V1RoleThreads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#threadmem.V1RoleThreads" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.V1RoleThreads.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#threadmem.V1RoleThreads.model_computed_fields" title="Link to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="threadmem.V1RoleThreads.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#threadmem.V1RoleThreads.model_config" title="Link to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="threadmem.V1RoleThreads.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'threads':</span> <span class="pre">FieldInfo(annotation=List[V1RoleThread],</span> <span class="pre">required=True)}</span></em><a class="headerlink" href="#threadmem.V1RoleThreads.model_fields" title="Link to this definition"></a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 <dl class="py attribute">
