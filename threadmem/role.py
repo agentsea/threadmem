@@ -131,7 +131,7 @@ class RoleMessage(WithDB):
         # Assemble the final JSON structure
         return {"role": self.role, "content": content}
 
-    def to_orign(self) -> Prompt:
+    def to_orign(self) -> MessageItem:
         """Converts a RoleMessage to an Orign Prompt format."""
         content: List[ContentItem] = []
 
@@ -176,7 +176,7 @@ class RoleMessage(WithDB):
         message = MessageItem(role=self.role, content=content if content else self.text)
 
         # Return the final Prompt structure
-        return Prompt(messages=[message])
+        return message
 
     def to_record(self) -> RoleMessageRecord:
         """
@@ -403,6 +403,10 @@ class RoleThread(WithDB):
             out.append(dct)
 
         return out
+
+    def to_orign(self) -> Prompt:
+        """Converts a RoleThread to an Orign Prompt format."""
+        return Prompt(messages=[msg.to_orign() for msg in self._messages])
 
     @property
     def role_mapping(self) -> Dict[str, V1Role]:
