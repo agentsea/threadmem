@@ -1220,24 +1220,6 @@ files = [
 ]
 
 [[package]]
-name = "orign"
-version = "0.1.12"
-description = "A Python client for Orign"
-optional = false
-python-versions = "<4.0,>=3.10"
-files = [
-    {file = "orign-0.1.12-py3-none-any.whl", hash = "sha256:8799d1d65ee0f8a54792df1177e1e709144f4dd39d5b040f444757c46b99c0a7"},
-    {file = "orign-0.1.12.tar.gz", hash = "sha256:02f94d27323559b36f7a19c51012a48a695a7a58bb3552fd8a2ce1320186ed69"},
-]
-
-[package.dependencies]
-pillow = ">=10.4,<11.0"
-pydantic = ">=2.9.2,<3.0.0"
-pyyaml = ">=6.0.2,<7.0.0"
-websocket-client = ">=1.8.0,<2.0.0"
-websockets = ">=13.1,<14.0"
-
-[[package]]
 name = "orjson"
 version = "3.10.0"
 description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
@@ -2788,22 +2770,6 @@ files = [
 ]
 
 [[package]]
-name = "websocket-client"
-version = "1.8.0"
-description = "WebSocket client for Python with low level API options"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "websocket_client-1.8.0-py3-none-any.whl", hash = "sha256:17b44cc997f5c498e809b22cdf2d9c7a9e71c02c8cc2b6c56e7c2d1239bfa526"},
-    {file = "websocket_client-1.8.0.tar.gz", hash = "sha256:3239df9f44da632f96012472805d40a23281a991027ce11d2f45a6f24ac4c3da"},
-]
-
-[package.extras]
-docs = ["Sphinx (>=6.0)", "myst-parser (>=2.0.0)", "sphinx-rtd-theme (>=1.1.0)"]
-optional = ["python-socks", "wsaccel"]
-test = ["websockets"]
-
-[[package]]
 name = "websockets"
 version = "13.1"
 description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
@@ -2901,4 +2867,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "510ccd88c7b1331b05bd1ae84439b0ecd7369bb128daa4b381239871eb8291bb"
+content-hash = "8b41d4346cbdcdac22a39f743afc79fbc790e83839ba60b936f1f6a611bb38de"
